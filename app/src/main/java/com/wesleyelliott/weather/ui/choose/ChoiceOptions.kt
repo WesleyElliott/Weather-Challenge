@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.wesleyelliott.weather.R
+import com.wesleyelliott.weather.data.EnvironmentOption
 import com.wesleyelliott.weather.data.TemperatureOption
 import com.wesleyelliott.weather.data.WeatherOption
 import com.wesleyelliott.weather.data.getIcon
@@ -258,6 +259,107 @@ fun SelectTemperatureChoice(
             SelectChoiceHeading(
                 title = temperature.name,
                 icon = temperature.getIcon()
+            )
+        }
+    }
+}
+
+@Composable
+fun SelectEnvironmentChoice(
+    boxState: BoxState,
+    selectedEnvironmentOption: EnvironmentOption? = null,
+    onChoiceSelect: (EnvironmentOption) -> Unit
+) {
+    val color = Color.Yellow.copy(alpha = 0.3f)
+    SelectChoiceWrapper(
+        boxState = boxState,
+        color = color
+    ) { expanded ->
+        if (expanded) {
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        modifier = Modifier.padding(start = 16.dp),
+                        text = "What environment?",
+                        style = MaterialTheme.typography.h4
+                    )
+                }
+
+                Column(
+                    modifier = Modifier.fillMaxHeight(),
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        SelectableImage(
+                            resourceId = R.drawable.ic_mountains,
+                            contentDescription = "Mountains",
+                            color = color,
+                            onClick = {
+                                onChoiceSelect(EnvironmentOption.Mountains)
+                            }
+                        )
+                        SelectableImage(
+                            resourceId = R.drawable.ic_nature,
+                            contentDescription = "Nature",
+                            color = color,
+                            onClick = {
+                                onChoiceSelect(EnvironmentOption.Nature)
+                            }
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        SelectableImage(
+                            resourceId = R.drawable.ic_coastal,
+                            contentDescription = "Coastal",
+                            color = color,
+                            onClick = {
+                                onChoiceSelect(EnvironmentOption.Coastal)
+                            }
+                        )
+                        SelectableImage(
+                            resourceId = R.drawable.ic_urban,
+                            contentDescription = "Urban",
+                            color = color,
+                            onClick = {
+                                onChoiceSelect(EnvironmentOption.Urban)
+                            }
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        SelectableImage(
+                            resourceId = R.drawable.ic_coastal,
+                            contentDescription = "Any",
+                            color = color,
+                            onClick = {
+                                onChoiceSelect(EnvironmentOption.Coastal)
+                            }
+                        )
+                    }
+                }
+            }
+        } else {
+            val environment = selectedEnvironmentOption ?: EnvironmentOption.Urban
+            SelectChoiceHeading(
+                title = environment.name,
+                icon = environment.getIcon()
             )
         }
     }

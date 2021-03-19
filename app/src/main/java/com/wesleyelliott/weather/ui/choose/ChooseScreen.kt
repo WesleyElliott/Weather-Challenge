@@ -38,5 +38,16 @@ fun ChooseScreen() {
                 }
             )
         }
+
+        item { boxState ->
+            SelectEnvironmentChoice(
+                boxState = boxState,
+                selectedEnvironmentOption = viewModel.state.value.environmentOption,
+                onChoiceSelect = {
+                    viewModel.selectEnvironment(it)
+                    next()
+                }
+            )
+        }
     }
 }
