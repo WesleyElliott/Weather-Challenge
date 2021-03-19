@@ -221,7 +221,7 @@ fun SelectTemperatureChoice(
                     ) {
                         SelectableImage(
                             resourceId = R.drawable.ic_hot,
-                            contentDescription = "Sunny",
+                            contentDescription = "Warm",
                             color = color,
                             onClick = {
                                 onChoiceSelect(TemperatureOption.Warm)
@@ -229,7 +229,7 @@ fun SelectTemperatureChoice(
                         )
                         SelectableImage(
                             resourceId = R.drawable.ic_cold,
-                            contentDescription = "Rainy",
+                            contentDescription = "Cold",
                             color = color,
                             onClick = {
                                 onChoiceSelect(TemperatureOption.Cold)
