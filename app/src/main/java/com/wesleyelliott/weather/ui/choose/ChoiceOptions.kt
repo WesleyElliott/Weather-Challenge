@@ -81,9 +81,10 @@ fun SelectWeatherChoice(
     onChoiceSelect: (WeatherOption) -> Unit
 ) {
 
+    val color = Color.Blue.copy(alpha = 0.3f)
     SelectChoiceWrapper(
         boxState = boxState,
-        color = Color.Blue.copy(alpha = 0.3f)
+        color = color
     ) { expanded ->
         if (expanded) {
             Column {
@@ -113,6 +114,7 @@ fun SelectWeatherChoice(
                         SelectableImage(
                             resourceId = R.drawable.ic_sun,
                             contentDescription = "Sunny",
+                            color = color,
                             onClick = {
                                 onChoiceSelect(WeatherOption.Sunny)
                             }
@@ -120,6 +122,7 @@ fun SelectWeatherChoice(
                         SelectableImage(
                             resourceId = R.drawable.ic_rain,
                             contentDescription = "Rainy",
+                            color = color,
                             onClick = {
                                 onChoiceSelect(WeatherOption.Rainy)
                             }
@@ -133,6 +136,7 @@ fun SelectWeatherChoice(
                         SelectableImage(
                             resourceId = R.drawable.ic_snow,
                             contentDescription = "Snowy",
+                            color = color,
                             onClick = {
                                 onChoiceSelect(WeatherOption.Snowy)
                             }
@@ -140,6 +144,7 @@ fun SelectWeatherChoice(
                         SelectableImage(
                             resourceId = R.drawable.ic_storm,
                             contentDescription = "Stormy",
+                            color = color,
                             onClick = {
                                 onChoiceSelect(WeatherOption.Stormy)
                             }
@@ -153,6 +158,7 @@ fun SelectWeatherChoice(
                         SelectableImage(
                             resourceId = R.drawable.ic_wind,
                             contentDescription = "Windy",
+                            color = color,
                             onClick = {
                                 onChoiceSelect(WeatherOption.Windy)
                             }
@@ -160,6 +166,7 @@ fun SelectWeatherChoice(
                         SelectableImage(
                             resourceId = R.drawable.ic_rainbow,
                             contentDescription = "Calm-y",
+                            color = color,
                             onClick = {
                                 onChoiceSelect(WeatherOption.Calm)
                             }
@@ -184,9 +191,10 @@ fun SelectTemperatureChoice(
     selectedTemperatureOption: TemperatureOption? = null,
     onChoiceSelect: (TemperatureOption) -> Unit
 ) {
+    val color = Color.Green.copy(alpha = 0.3f)
     SelectChoiceWrapper(
         boxState = boxState,
-        color = Color.Green.copy(alpha = 0.3f)
+        color = color
     ) { expanded ->
         if (expanded) {
             Column {
@@ -216,6 +224,7 @@ fun SelectTemperatureChoice(
                         SelectableImage(
                             resourceId = R.drawable.ic_hot,
                             contentDescription = "Sunny",
+                            color = color,
                             onClick = {
                                 onChoiceSelect(TemperatureOption.Warm)
                             }
@@ -223,6 +232,7 @@ fun SelectTemperatureChoice(
                         SelectableImage(
                             resourceId = R.drawable.ic_cold,
                             contentDescription = "Rainy",
+                            color = color,
                             onClick = {
                                 onChoiceSelect(TemperatureOption.Cold)
                             }
@@ -235,6 +245,7 @@ fun SelectTemperatureChoice(
                         SelectableImage(
                             resourceId = R.drawable.ic_any_temperature,
                             contentDescription = "Any",
+                            color = color,
                             onClick = {
                                 onChoiceSelect(TemperatureOption.Any)
                             }
@@ -256,12 +267,13 @@ fun SelectTemperatureChoice(
 fun SelectableImage(
     @DrawableRes resourceId: Int,
     contentDescription: String,
+    color: Color,
     onClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .size(130.dp)
-            .background(Color.Blue.copy(alpha = 0.3f), MaterialTheme.shapes.medium)
+            .background(color, MaterialTheme.shapes.medium)
             .clip(MaterialTheme.shapes.medium)
             .clickable(onClick = onClick)
             .padding(vertical = 4.dp),
