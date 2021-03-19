@@ -65,7 +65,7 @@ private fun SelectChoiceHeading(
                 .size(180.dp)
                 .padding(vertical = 12.dp)
                 .alpha(0.6f)
-                .offset(x = 70.dp),
+                .offset(x = 50.dp),
             painter = painterResource(id = icon),
             contentDescription = title
         )
