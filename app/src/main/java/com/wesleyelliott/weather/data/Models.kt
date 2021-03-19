@@ -37,3 +37,12 @@ fun WeatherOption.getIcon(): Int {
         WeatherOption.Calm -> R.drawable.ic_rainbow
     }
 }
+
+@DrawableRes
+fun TemperatureOption.getIcon(): Int {
+    return when (this) {
+        TemperatureOption.Warm -> R.drawable.ic_hot
+        TemperatureOption.Cold -> R.drawable.ic_cold
+        TemperatureOption.Any -> R.drawable.ic_any_temperature
+    }
+}
