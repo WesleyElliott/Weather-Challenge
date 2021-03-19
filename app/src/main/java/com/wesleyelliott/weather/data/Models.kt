@@ -46,3 +46,13 @@ fun TemperatureOption.getIcon(): Int {
         TemperatureOption.Any -> R.drawable.ic_any_temperature
     }
 }
+
+@DrawableRes
+fun EnvironmentOption.getIcon(): Int {
+    return when (this) {
+        EnvironmentOption.Mountains -> R.drawable.ic_mountains
+        EnvironmentOption.Nature -> R.drawable.ic_nature
+        EnvironmentOption.Coastal -> R.drawable.ic_coastal
+        EnvironmentOption.Urban -> R.drawable.ic_urban
+    }
+}
