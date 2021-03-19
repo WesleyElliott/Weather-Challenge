@@ -20,9 +20,59 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.wesleyelliott.weather.R
+import com.wesleyelliott.weather.data.TemperatureOption
 import com.wesleyelliott.weather.data.WeatherOption
 import com.wesleyelliott.weather.data.getIcon
 import com.wesleyelliott.weather.ui.common.BoxState
+
+@Composable
+private fun SelectChoiceWrapper(
+    boxState: BoxState,
+    color: Color,
+    content: @Composable (Boolean) -> Unit
+) {
+    val backgroundColor = animateColorAsState(
+        if (boxState == BoxState.Expanded) Color.Transparent else color,
+        animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)
+    )
+    Crossfade(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(backgroundColor.value),
+        targetState = boxState == BoxState.Expanded
+    ) { expanded ->
+        content(expanded)
+    }
+}
+
+@Composable
+private fun SelectChoiceHeading(
+    title: String,
+    @DrawableRes icon: Int
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            modifier = Modifier.padding(start = 16.dp),
+            text = title,
+            style = MaterialTheme.typography.h4
+        )
+        Image(
+            modifier = Modifier
+                .size(180.dp)
+                .padding(vertical = 12.dp)
+                .alpha(0.6f)
+                .offset(x = 70.dp),
+            painter = painterResource(id = icon),
+            contentDescription = title
+        )
+    }
+}
 
 @Composable
 fun SelectWeatherChoice(
@@ -30,18 +80,11 @@ fun SelectWeatherChoice(
     selectedWeather: WeatherOption? = null,
     onChoiceSelect: (WeatherOption) -> Unit
 ) {
-    val backgroundColor = animateColorAsState(
-        if (boxState == BoxState.Expanded) Color.Transparent else Color.Blue.copy(alpha = 0.3f),
-        animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)
-    )
 
-    Crossfade(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(backgroundColor.value),
-        targetState = boxState == BoxState.Expanded
+    SelectChoiceWrapper(
+        boxState = boxState,
+        color = Color.Blue.copy(alpha = 0.3f)
     ) { expanded ->
-
         if (expanded) {
             Column {
                 Row(
@@ -127,27 +170,84 @@ fun SelectWeatherChoice(
 
         } else {
             val weather = selectedWeather ?: WeatherOption.Sunny
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    modifier = Modifier.padding(start = 16.dp),
-                    text = weather.name,
-                    style = MaterialTheme.typography.h4
-                )
-                Image(
+            SelectChoiceHeading(
+                title = weather.name,
+                icon = weather.getIcon()
+            )
+        }
+    }
+}
+
+@Composable
+fun SelectTemperatureChoice(
+    boxState: BoxState,
+    selectedTemperatureOption: TemperatureOption? = null,
+    onChoiceSelect: (TemperatureOption) -> Unit
+) {
+    SelectChoiceWrapper(
+        boxState = boxState,
+        color = Color.Green.copy(alpha = 0.3f)
+    ) { expanded ->
+        if (expanded) {
+            Column {
+                Row(
                     modifier = Modifier
-                        .size(180.dp)
-                        .alpha(0.6f)
-                        .offset(x = 70.dp),
-                    painter = painterResource(id = weather.getIcon()),
-                    contentDescription = weather.name
-                )
+                        .fillMaxWidth()
+                        .height(120.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        modifier = Modifier.padding(start = 16.dp),
+                        text = "What temperature?",
+                        style = MaterialTheme.typography.h4
+                    )
+                }
+
+                Column(
+                    modifier = Modifier.fillMaxHeight(),
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        SelectableImage(
+                            resourceId = R.drawable.ic_hot,
+                            contentDescription = "Sunny",
+                            onClick = {
+                                onChoiceSelect(TemperatureOption.Warm)
+                            }
+                        )
+                        SelectableImage(
+                            resourceId = R.drawable.ic_cold,
+                            contentDescription = "Rainy",
+                            onClick = {
+                                onChoiceSelect(TemperatureOption.Cold)
+                            }
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        SelectableImage(
+                            resourceId = R.drawable.ic_any_temperature,
+                            contentDescription = "Any",
+                            onClick = {
+                                onChoiceSelect(TemperatureOption.Any)
+                            }
+                        )
+                    }
+                }
             }
+        } else {
+            val temperature = selectedTemperatureOption ?: TemperatureOption.Any
+            SelectChoiceHeading(
+                title = temperature.name,
+                icon = temperature.getIcon()
+            )
         }
     }
 }

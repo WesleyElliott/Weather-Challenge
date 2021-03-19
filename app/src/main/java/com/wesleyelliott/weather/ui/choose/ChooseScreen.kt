@@ -27,5 +27,16 @@ fun ChooseScreen() {
                 }
             )
         }
+
+        item { boxState ->
+            SelectTemperatureChoice(
+                boxState = boxState,
+                selectedTemperatureOption = viewModel.state.value.temperatureOption,
+                onChoiceSelect = {
+                    viewModel.selectTemperature(it)
+                    next()
+                }
+            )
+        }
     }
 }
