@@ -16,7 +16,7 @@ enum class EnvironmentOption {
 }
 
 enum class DistanceOption {
-    _100, _200, _300, Any
+    _100, _250, _500, Any
 }
 
 data class WeatherChoice(
@@ -54,5 +54,19 @@ fun EnvironmentOption.getIcon(): Int {
         EnvironmentOption.Nature -> R.drawable.ic_nature
         EnvironmentOption.Coastal -> R.drawable.ic_coastal
         EnvironmentOption.Urban -> R.drawable.ic_urban
+    }
+}
+
+@DrawableRes
+fun DistanceOption.getIcon(): Int {
+    return R.drawable.ic_distance
+}
+
+fun DistanceOption.getString(): String {
+    return when (this) {
+        DistanceOption._100 -> "100km"
+        DistanceOption._250 -> "250km"
+        DistanceOption._500 -> "500km"
+        DistanceOption.Any -> this.name
     }
 }
