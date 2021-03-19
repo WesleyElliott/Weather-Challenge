@@ -5,8 +5,9 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -39,23 +40,42 @@ interface WeatherSelectScope {
 }
 
 /**
- * Represents the actual content of the accordion view, which can either be [BoxState.Expanded] or
- * [BoxState.Collapsed].
- *
- * This state can be changed with the [collapse] or [expand] methods
+ * Represents the actual content of the accordion view
  */
 private class WeatherSelectContent(
     val content: WeatherSelectScope.(index: Int) -> @Composable () -> Unit
+)
+
+/**
+ * A state object that can be used to observe the current item of the accordion view, and can be
+ * used to control the position.
+ * Should be used with [rememberWeatherSelectState] in order to preserve the state across config
+ * changes.
+ *
+ * @param initialCurrentItem the initial current position of the accordion view
+ */
+class WeatherSelectState(
+    initialCurrentItem: Int = 0
 ) {
-    private val _currentState = mutableStateOf(BoxState.Expanded)
-    val state: State<BoxState> = _currentState
+    /**
+     * The current item to show in the expanded state
+     */
+    val currentItem = mutableStateOf(initialCurrentItem)
 
-    fun collapse() {
-        _currentState.value = BoxState.Collapsed
-    }
-
-    fun expand() {
-        _currentState.value = BoxState.Expanded
+    companion object {
+        /**
+         * Saver implementation to save and restore the current position across config changes
+         */
+        val Saver: Saver<WeatherSelectState, *> = Saver(
+            save = {
+                it.currentItem.value
+            },
+            restore = {
+                WeatherSelectState(
+                    initialCurrentItem = it
+                )
+            }
+        )
     }
 }
 
@@ -64,10 +84,12 @@ private class WeatherSelectContent(
  * [WeatherSelectFlow].
  * @param maxHeight the maximum height of the container to expand to
  * @param collapsedHeight the height of the accordion view when collapsed
+ * @param weatherSelectState the state used to control the accordion view position
  */
 private class WeatherSelectScopeImpl(
     private val maxHeight: Dp,
-    private val collapsedHeight: Dp
+    private val collapsedHeight: Dp,
+    private val weatherSelectState: WeatherSelectState
 ): WeatherSelectScope, WeatherSelectScopeContentFactory {
 
     /**
@@ -78,13 +100,16 @@ private class WeatherSelectScopeImpl(
 
     /**
      * The current item to show in the expanded state
+     * This is just a backing field, the real state is controlled in the [weatherSelectState]
      */
-    private val currentItem = mutableStateOf(0)
+    private var currentItem: Int
+        get() = weatherSelectState.currentItem.value
+        set(value) {
+            weatherSelectState.currentItem.value = value
+        }
 
     override fun next() {
-        val current = currentItem.value.coerceAtMost(totalSize - 1)
-        items[current].collapse()
-        currentItem.value += 1
+        currentItem += 1
     }
 
     override fun getContent(index: Int, scope: WeatherSelectScope): @Composable () -> Unit {
@@ -98,9 +123,14 @@ private class WeatherSelectScopeImpl(
                 content = { index ->
                     @Composable {
                         /**
-                         * Get the current state of this specific accordion view
+                         * Get the current state of this specific accordion view.
+                         * If the current position is bigger than the index, then this view is
+                         * [BoxState.Collapsed]
                          */
-                        val internalState = items[index].state.value
+                        val internalState = when {
+                            currentItem <= index -> BoxState.Expanded
+                            else -> BoxState.Collapsed
+                        }
 
                         /**
                          * Create a transition from the max height to the collapsed height (and
@@ -127,12 +157,7 @@ private class WeatherSelectScopeImpl(
                                 .clickable(
                                     enabled = internalState == BoxState.Collapsed,
                                     onClick = {
-                                        currentItem.value = index
-                                        items
-                                            .subList(index, totalSize)
-                                            .forEach {
-                                                it.expand()
-                                            }
+                                        currentItem = index
                                     }
                                 )
                                 .height(height.value.dp),
@@ -143,6 +168,13 @@ private class WeatherSelectScopeImpl(
                 }
             )
         )
+    }
+}
+
+@Composable
+fun rememberWeatherSelectState(initialCurrentItem: Int = 0): WeatherSelectState {
+    return rememberSaveable(saver = WeatherSelectState.Saver) {
+        WeatherSelectState(initialCurrentItem)
     }
 }
 
@@ -161,6 +193,7 @@ private class WeatherSelectScopeImpl(
 @Composable
 fun WeatherSelectFlow(
     modifier: Modifier = Modifier,
+    weatherSelectState: WeatherSelectState = rememberWeatherSelectState(),
     collapsedHeight: Dp = 150.dp,
     content: WeatherSelectScope.() -> Unit
 ) {
@@ -169,7 +202,8 @@ fun WeatherSelectFlow(
     ) {
         val scope = WeatherSelectScopeImpl(
             maxHeight = maxHeight,
-            collapsedHeight = collapsedHeight
+            collapsedHeight = collapsedHeight,
+            weatherSelectState = weatherSelectState
         )
         scope.apply(content)
 
