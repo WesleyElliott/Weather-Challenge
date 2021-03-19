@@ -3,10 +3,7 @@ package com.wesleyelliott.weather.ui.choose
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.wesleyelliott.weather.data.EnvironmentOption
-import com.wesleyelliott.weather.data.TemperatureOption
-import com.wesleyelliott.weather.data.WeatherChoice
-import com.wesleyelliott.weather.data.WeatherOption
+import com.wesleyelliott.weather.data.*
 
 class ChooseViewModel : ViewModel() {
     private var weatherChoice = WeatherChoice()
@@ -31,6 +28,14 @@ class ChooseViewModel : ViewModel() {
         setState {
             copy(
                 environmentOption = environmentOption
+            )
+        }
+    }
+
+    fun selectDistance(distanceOption: DistanceOption) {
+        setState {
+            copy(
+                distanceOption = distanceOption
             )
         }
     }

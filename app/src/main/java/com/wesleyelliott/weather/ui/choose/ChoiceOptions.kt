@@ -20,10 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.wesleyelliott.weather.R
-import com.wesleyelliott.weather.data.EnvironmentOption
-import com.wesleyelliott.weather.data.TemperatureOption
-import com.wesleyelliott.weather.data.WeatherOption
-import com.wesleyelliott.weather.data.getIcon
+import com.wesleyelliott.weather.data.*
 import com.wesleyelliott.weather.ui.common.BoxState
 
 @Composable
@@ -366,6 +363,89 @@ fun SelectEnvironmentChoice(
 }
 
 @Composable
+fun SelectDistanceChoice(
+    boxState: BoxState,
+    selectedDistanceOption: DistanceOption? = null,
+    onChoiceSelect: (DistanceOption) -> Unit
+) {
+    val color = Color.Red.copy(alpha = 0.3f)
+    SelectChoiceWrapper(
+        boxState = boxState,
+        color = color
+    ) { expanded ->
+        if (expanded) {
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        modifier = Modifier.padding(start = 16.dp),
+                        text = "What distance?",
+                        style = MaterialTheme.typography.h4
+                    )
+                }
+
+                Column(
+                    modifier = Modifier.fillMaxHeight(),
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        SelectableText(
+                            contentDescription = "100km",
+                            color = color,
+                            onClick = {
+                                onChoiceSelect(DistanceOption._100)
+                            }
+                        )
+                        SelectableText(
+                            contentDescription = "250km",
+                            color = color,
+                            onClick = {
+                                onChoiceSelect(DistanceOption._250)
+                            }
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        SelectableText(
+                            contentDescription = "500km",
+                            color = color,
+                            onClick = {
+                                onChoiceSelect(DistanceOption._500)
+                            }
+                        )
+                        SelectableText(
+                            contentDescription = "Any",
+                            color = color,
+                            onClick = {
+                                onChoiceSelect(DistanceOption.Any)
+                            }
+                        )
+                    }
+                }
+            }
+        } else {
+            val distance = selectedDistanceOption ?: DistanceOption.Any
+            SelectChoiceHeading(
+                title = distance.getString(),
+                icon = distance.getIcon()
+            )
+        }
+    }
+}
+
+@Composable
 fun SelectableImage(
     @DrawableRes resourceId: Int,
     contentDescription: String,
@@ -387,6 +467,29 @@ fun SelectableImage(
             painter = painterResource(id = resourceId),
             contentDescription = contentDescription
         )
+        Text(
+            text = contentDescription,
+            style = MaterialTheme.typography.h6
+        )
+    }
+}
+
+@Composable
+fun SelectableText(
+    contentDescription: String,
+    color: Color,
+    onClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .size(width = 130.dp, height = 90.dp)
+            .background(color, MaterialTheme.shapes.medium)
+            .clip(MaterialTheme.shapes.medium)
+            .clickable(onClick = onClick)
+            .padding(vertical = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             text = contentDescription,
             style = MaterialTheme.typography.h6

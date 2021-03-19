@@ -49,5 +49,16 @@ fun ChooseScreen() {
                 }
             )
         }
+
+        item { boxState ->
+            SelectDistanceChoice(
+                boxState = boxState,
+                selectedDistanceOption = viewModel.state.value.distanceOption,
+                onChoiceSelect = {
+                    viewModel.selectDistance(it)
+                    next()
+                }
+            )
+        }
     }
 }
