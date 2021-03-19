@@ -83,12 +83,16 @@ class WeatherSelectState(
  * Implementation of the [WeatherSelectScope] to manage the list of accordion views in the
  * [WeatherSelectFlow].
  * @param maxHeight the maximum height of the container to expand to
- * @param collapsedHeight the height of the accordion view when collapsed
+ * @param maxWidth the maximum width of the container to expand to
+ * @param collapsedSize the size of the accordion view when collapsed
+ * @param isVertical if the layout should expand vertically, or horizontally
  * @param weatherSelectState the state used to control the accordion view position
  */
 private class WeatherSelectScopeImpl(
     private val maxHeight: Dp,
-    private val collapsedHeight: Dp,
+    private val maxWidth: Dp,
+    private val collapsedSize: Dp,
+    private val isVertical: Boolean = true,
     private val weatherSelectState: WeatherSelectState
 ): WeatherSelectScope, WeatherSelectScopeContentFactory {
 
@@ -132,35 +136,50 @@ private class WeatherSelectScopeImpl(
                             else -> BoxState.Collapsed
                         }
 
+                        val maxSize = if (isVertical) maxHeight.value else maxWidth.value
+
                         /**
-                         * Create a transition from the max height to the collapsed height (and
-                         * vice-versa)
+                         * Create a transition from the max height or width (based on if the layout
+                         * is vertical or horizontal) to the collapsed size (and vice-versa)
                          */
                         val transition = updateTransition(targetState = internalState)
                         val height = transition.animateFloat { state ->
                             when (state) {
-                                BoxState.Collapsed -> collapsedHeight.value
-                                BoxState.Expanded -> maxHeight.value
+                                BoxState.Collapsed -> collapsedSize.value
+                                BoxState.Expanded -> maxSize
                             }
                         }
 
                         /**
-                         * The [Box] used to render the content at the specific [height], which
-                         * is animated when the internal state changes.
+                         * Base modifier to apply the click action to expand the accordion
+                         * to the specific index.
+                         */
+                        var modifier = Modifier.clickable(
+                            enabled = internalState == BoxState.Collapsed,
+                            onClick = {
+                                currentItem = index
+                            }
+                        )
+
+                        /**
+                         * Apply a width or height modifier based on if the layout is vertical or
+                         * horizontal.
+                         */
+                        modifier = if (isVertical) {
+                            modifier.fillMaxWidth().height(height.value.dp)
+                        } else {
+                            modifier.fillMaxHeight().width(height.value.dp)
+                        }
+
+                        /**
+                         * The [Box] used to render the content at the specific [height] or [width],
+                         * which is animated when the internal state changes.
                          *
                          * This is also clickable to allow re-expanding a collapsed item
                          * NOTE: expanding an item also expands all the items _after_ that item
                          */
                         Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable(
-                                    enabled = internalState == BoxState.Collapsed,
-                                    onClick = {
-                                        currentItem = index
-                                    }
-                                )
-                                .height(height.value.dp),
+                            modifier = modifier
                         ) {
                             content(internalState)
                         }
@@ -187,14 +206,17 @@ fun rememberWeatherSelectState(initialCurrentItem: Int = 0): WeatherSelectState 
  * [WeatherSelectScope.next] function.
  *
  * @param modifier the modifier to apply to this layout
- * @param collapsedHeight the height of the accordion view when collapsed
+ * @param weatherSelectState a state that can be used by consumers to control the accordion
+ * @param collapsedSize the height of the accordion view when collapsed
+ * @param isVertical specify if the layout should be vertical or horizontal
  * @param content a block to describe the accordion items using the [WeatherSelectScope.item] method
  */
 @Composable
 fun WeatherSelectFlow(
     modifier: Modifier = Modifier,
     weatherSelectState: WeatherSelectState = rememberWeatherSelectState(),
-    collapsedHeight: Dp = 150.dp,
+    collapsedSize: Dp = 150.dp,
+    isVertical: Boolean = true,
     content: WeatherSelectScope.() -> Unit
 ) {
     BoxWithConstraints(
@@ -202,7 +224,9 @@ fun WeatherSelectFlow(
     ) {
         val scope = WeatherSelectScopeImpl(
             maxHeight = maxHeight,
-            collapsedHeight = collapsedHeight,
+            maxWidth = maxWidth,
+            collapsedSize = collapsedSize,
+            isVertical = isVertical,
             weatherSelectState = weatherSelectState
         )
         scope.apply(content)
@@ -210,6 +234,7 @@ fun WeatherSelectFlow(
         WeatherSelectFlowImpl(
             modifier = modifier,
             itemCount = scope.totalSize,
+            isVertical = isVertical,
             scope = scope,
             scopedFactory = scope
         )
@@ -221,14 +246,25 @@ fun WeatherSelectFlow(
 private fun WeatherSelectFlowImpl(
     modifier: Modifier = Modifier,
     itemCount: Int,
+    isVertical: Boolean = true,
     scope: WeatherSelectScope,
     scopedFactory: WeatherSelectScopeContentFactory
 ) {
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
-        for (i in 0 until itemCount) {
-            scopedFactory.getContent(i, scope).invoke()
+    if (isVertical) {
+        Column(
+            modifier = modifier.fillMaxSize()
+        ) {
+            for (i in 0 until itemCount) {
+                scopedFactory.getContent(i, scope).invoke()
+            }
+        }
+    } else {
+        Row(
+            modifier = modifier.fillMaxSize()
+        ) {
+            for (i in 0 until itemCount) {
+                scopedFactory.getContent(i, scope).invoke()
+            }
         }
     }
 }
