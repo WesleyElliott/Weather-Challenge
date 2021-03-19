@@ -29,22 +29,22 @@ fun ChooseScreen() {
         }
 
         item { boxState ->
-            SelectTemperatureChoice(
+            SelectEnvironmentChoice(
                 boxState = boxState,
-                selectedTemperatureOption = viewModel.state.value.temperatureOption,
+                selectedEnvironmentOption = viewModel.state.value.environmentOption,
                 onChoiceSelect = {
-                    viewModel.selectTemperature(it)
+                    viewModel.selectEnvironment(it)
                     next()
                 }
             )
         }
 
         item { boxState ->
-            SelectEnvironmentChoice(
+            SelectTemperatureChoice(
                 boxState = boxState,
-                selectedEnvironmentOption = viewModel.state.value.environmentOption,
+                selectedTemperatureOption = viewModel.state.value.temperatureOption,
                 onChoiceSelect = {
-                    viewModel.selectEnvironment(it)
+                    viewModel.selectTemperature(it)
                     next()
                 }
             )
