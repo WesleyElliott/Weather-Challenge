@@ -1,13 +1,29 @@
 package com.wesleyelliott.weather.ui.choose
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.wesleyelliott.weather.data.WeatherChoice
 import com.wesleyelliott.weather.ui.common.WeatherSelectFlow
+import com.wesleyelliott.weather.ui.theme.baseBlue
 import com.wesleyelliott.weather.ui.utils.isVertical
 
 @Composable
-fun ChooseScreen() {
+fun ChooseScreen(
+    onGoClick: (WeatherChoice) -> Unit
+) {
     val viewModel = viewModel<ChooseViewModel>()
     BoxWithConstraints {
         WeatherSelectFlow(
@@ -56,6 +72,31 @@ fun ChooseScreen() {
                         next()
                     }
                 )
+            }
+
+            item {
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Button(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .size(80.dp),
+                        shape = CircleShape,
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = baseBlue
+                        ),
+                        onClick = {
+                            onGoClick(viewModel.state.value)
+                        }
+                    ) {
+                        Text(
+                            text = "Go!",
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.h5
+                        )
+                    }
+                }
             }
         }
     }
