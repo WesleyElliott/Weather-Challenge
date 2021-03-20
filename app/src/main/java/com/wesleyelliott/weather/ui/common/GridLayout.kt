@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import kotlin.math.roundToInt
+import kotlin.math.ceil
 
 /**
  * Represents the actual composable content of the grid item
@@ -18,6 +18,20 @@ private class GridLayoutContent(
  */
 interface GridLayoutScope {
     fun item(content: @Composable GridLayoutScope.() -> Unit)
+    fun items(count: Int, itemContent: @Composable GridLayoutScope.(index: Int) -> Unit)
+}
+
+/**
+ * Add a list of items
+ *
+ * @param items the list
+ * @param itemContent the content of a single item
+ */
+inline fun <T> GridLayoutScope.items(
+    items: List<T>,
+    crossinline itemContent: @Composable GridLayoutScope.(item: T) -> Unit
+) = items(items.size) {
+    itemContent(items[it])
 }
 
 /**
@@ -40,6 +54,20 @@ private class GridLayoutScopeImpl : GridLayoutScope {
                 }
             )
         )
+    }
+
+    override fun items(count: Int, itemContent: @Composable GridLayoutScope.(index: Int) -> Unit) {
+        for (i in 0 until count) {
+            items.add(
+                GridLayoutContent(
+                    content = {
+                        @Composable{
+                            itemContent(i)
+                        }
+                    }
+                )
+            )
+        }
     }
 
     fun getContent(index: Int):  @Composable () -> Unit  {
@@ -77,7 +105,7 @@ fun GridLayout(
         verticalArrangement = verticalArrangement,
         horizontalAlignment = horizontalAlignment
     ) {
-        val rowCount = (scope.totalSize / columnCount.toFloat()).roundToInt()
+        val rowCount = ceil(scope.totalSize / columnCount.toFloat()).toInt()
         var index = 0
         for (i in 0 until rowCount) {
             Row(
@@ -85,6 +113,9 @@ fun GridLayout(
                 horizontalArrangement = horizontalArrangement,
             ) {
                 for (j in 0 until columnCount) {
+                    if (index >= scope.totalSize) {
+                        break
+                    }
                     scope.getContent(index).invoke()
                     index++
                 }
