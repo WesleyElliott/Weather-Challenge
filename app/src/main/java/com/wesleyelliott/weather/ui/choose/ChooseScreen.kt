@@ -1,64 +1,62 @@
 package com.wesleyelliott.weather.ui.choose
 
-import android.content.res.Configuration
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.wesleyelliott.weather.ui.common.WeatherSelectFlow
+import com.wesleyelliott.weather.ui.utils.isVertical
 
 @Composable
 fun ChooseScreen() {
-    val config = LocalConfiguration.current
     val viewModel = viewModel<ChooseViewModel>()
+    BoxWithConstraints {
+        WeatherSelectFlow(
+            isVertical = isVertical,
+            collapsedSize = if (isVertical) maxHeight / 5 else maxWidth / 5
+        ) {
+            item { boxState ->
+                SelectWeatherChoice(
+                    boxState = boxState,
+                    selectedWeather = viewModel.state.value.weatherOption,
+                    onChoiceSelect = {
+                        viewModel.selectWeather(it)
+                        next()
+                    }
+                )
+            }
 
-    WeatherSelectFlow(
-        isVertical = config.orientation == Configuration.ORIENTATION_PORTRAIT,
+            item { boxState ->
+                SelectEnvironmentChoice(
+                    boxState = boxState,
+                    selectedEnvironmentOption = viewModel.state.value.environmentOption,
+                    onChoiceSelect = {
+                        viewModel.selectEnvironment(it)
+                        next()
+                    }
+                )
+            }
 
-        collapsedSize = 120.dp
-    ) {
-        item { boxState ->
-            SelectWeatherChoice(
-                boxState = boxState,
-                selectedWeather = viewModel.state.value.weatherOption,
-                onChoiceSelect = {
-                    viewModel.selectWeather(it)
-                    next()
-                }
-            )
-        }
+            item { boxState ->
+                SelectTemperatureChoice(
+                    boxState = boxState,
+                    selectedTemperatureOption = viewModel.state.value.temperatureOption,
+                    onChoiceSelect = {
+                        viewModel.selectTemperature(it)
+                        next()
+                    }
+                )
+            }
 
-        item { boxState ->
-            SelectEnvironmentChoice(
-                boxState = boxState,
-                selectedEnvironmentOption = viewModel.state.value.environmentOption,
-                onChoiceSelect = {
-                    viewModel.selectEnvironment(it)
-                    next()
-                }
-            )
-        }
-
-        item { boxState ->
-            SelectTemperatureChoice(
-                boxState = boxState,
-                selectedTemperatureOption = viewModel.state.value.temperatureOption,
-                onChoiceSelect = {
-                    viewModel.selectTemperature(it)
-                    next()
-                }
-            )
-        }
-
-        item { boxState ->
-            SelectDistanceChoice(
-                boxState = boxState,
-                selectedDistanceOption = viewModel.state.value.distanceOption,
-                onChoiceSelect = {
-                    viewModel.selectDistance(it)
-                    next()
-                }
-            )
+            item { boxState ->
+                SelectDistanceChoice(
+                    boxState = boxState,
+                    selectedDistanceOption = viewModel.state.value.distanceOption,
+                    onChoiceSelect = {
+                        viewModel.selectDistance(it)
+                        next()
+                    }
+                )
+            }
         }
     }
 }
