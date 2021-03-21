@@ -1,8 +1,8 @@
 package com.wesleyelliott.weather.ui.choose.options
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import com.wesleyelliott.weather.R
 import com.wesleyelliott.weather.data.EnvironmentOption
 import com.wesleyelliott.weather.data.getIcon
@@ -44,7 +44,7 @@ fun SelectEnvironmentChoice(
     selectedEnvironmentOption: EnvironmentOption? = null,
     onChoiceSelect: (EnvironmentOption) -> Unit
 ) {
-    val color = Color(0xFF1a2631)
+    val color = MaterialTheme.colors.surface
     SelectChoiceWrapper(
         boxState = boxState,
         color = color
@@ -62,7 +62,6 @@ fun SelectEnvironmentChoice(
                         ImageButton(
                             text = item.text,
                             iconRes = item.icon,
-                            color = Color(0xFF1e2a37),
                             onClick = {
                                 onChoiceSelect(item.option)
                             }

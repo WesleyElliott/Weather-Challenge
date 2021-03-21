@@ -1,8 +1,8 @@
 package com.wesleyelliott.weather.ui.choose.options
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import com.wesleyelliott.weather.data.DistanceOption
 import com.wesleyelliott.weather.data.getIcon
 import com.wesleyelliott.weather.data.getString
@@ -40,7 +40,7 @@ fun SelectDistanceChoice(
     selectedDistanceOption: DistanceOption? = null,
     onChoiceSelect: (DistanceOption) -> Unit
 ) {
-    val color = Color(0xFF1a2631)
+    val color = MaterialTheme.colors.surface
     SelectChoiceWrapper(
         boxState = boxState,
         color = color
@@ -57,7 +57,6 @@ fun SelectDistanceChoice(
                     items(distanceChoices) { item ->
                         TextButton(
                             text = item.text,
-                            color = Color(0xFF1e2a37),
                             onClick = {
                                 onChoiceSelect(item.option)
                             }

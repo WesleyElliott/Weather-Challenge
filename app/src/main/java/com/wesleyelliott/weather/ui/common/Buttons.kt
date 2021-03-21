@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
@@ -32,14 +31,13 @@ fun ImageButton(
     modifier: Modifier = Modifier,
     text: String,
     @DrawableRes iconRes: Int,
-    color: Color = Color.Transparent,
     onClick: () -> Unit
 ) {
     Column(
         modifier = modifier
             .size(120.dp)
             .clip(MaterialTheme.shapes.medium)
-            .background(color)
+            .background(MaterialTheme.colors.secondary)
             .clickable(onClick = onClick)
             .padding(vertical = 4.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
@@ -69,14 +67,13 @@ fun ImageButton(
 fun TextButton(
     modifier: Modifier = Modifier,
     text: String,
-    color: Color = Color.Transparent,
     onClick: () -> Unit
 ) {
     Column(
         modifier = modifier
             .size(width = 120.dp, height = 90.dp)
             .clip(MaterialTheme.shapes.medium)
-            .background(color)
+            .background(MaterialTheme.colors.secondary)
             .clickable(onClick = onClick)
             .padding(vertical = 4.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
