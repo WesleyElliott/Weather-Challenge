@@ -1,5 +1,8 @@
 package com.wesleyelliott.weather.ui.choose
 
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,8 +12,11 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,10 +30,24 @@ import com.wesleyelliott.weather.ui.utils.isVertical
 
 @Composable
 fun ChooseScreen(
+    modifier: Modifier = Modifier,
     onGoClick: (WeatherChoice) -> Unit
 ) {
     val viewModel = viewModel<ChooseViewModel>()
-    BoxWithConstraints {
+    val clicked = remember {
+        mutableStateOf(false)
+    }
+    val fade = animateFloatAsState(
+        targetValue = if (clicked.value) 0f else 1f,
+        animationSpec = tween(
+            durationMillis = 500,
+            easing = LinearOutSlowInEasing
+        )
+    )
+
+    BoxWithConstraints(
+        modifier = modifier
+    ) {
         AccordionLayout(
             isVertical = isVertical,
             collapsedSize = if (isVertical) maxHeight / 5 else maxWidth / 5
@@ -78,7 +98,7 @@ fun ChooseScreen(
 
             item {
                 Box(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize().alpha(fade.value)
                 ) {
                     Button(
                         modifier = Modifier
@@ -87,6 +107,7 @@ fun ChooseScreen(
                         shape = CircleShape,
                         onClick = {
                             onGoClick(viewModel.state.value)
+                            clicked.value = true
                         }
                     ) {
                         Text(
