@@ -35,11 +35,11 @@ fun ImageButton(
 ) {
     Column(
         modifier = modifier
-            .size(120.dp)
+            .size(130.dp)
+            .padding(vertical = 2.dp)
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colors.secondary)
-            .clickable(onClick = onClick)
-            .padding(vertical = 4.dp),
+            .clickable(onClick = onClick),
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
