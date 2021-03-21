@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -21,7 +20,6 @@ import com.wesleyelliott.weather.ui.choose.options.SelectEnvironmentChoice
 import com.wesleyelliott.weather.ui.choose.options.SelectTemperatureChoice
 import com.wesleyelliott.weather.ui.choose.options.SelectWeatherChoice
 import com.wesleyelliott.weather.ui.common.AccordionLayout
-import com.wesleyelliott.weather.ui.theme.baseBlue
 import com.wesleyelliott.weather.ui.utils.isVertical
 
 @Composable
@@ -87,9 +85,6 @@ fun ChooseScreen(
                             .align(Alignment.Center)
                             .size(80.dp),
                         shape = CircleShape,
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = baseBlue
-                        ),
                         onClick = {
                             onGoClick(viewModel.state.value)
                         }

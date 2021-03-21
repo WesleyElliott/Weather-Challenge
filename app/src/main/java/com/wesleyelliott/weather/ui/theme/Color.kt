@@ -30,18 +30,3 @@ val white = Color(0xFFFFFFFF)
 val white150 = Color(0x26FFFFFF) // White, 15%
 val white800 = Color(0xCCFFFFFF) // White, 80%
 val white850 = Color(0xD9FFFFFF) // White, 85%
-
-val taupe800 = Color(0xFF655454)
-
-val purple200 = Color(0xFFBB86FC)
-val purple500 = Color(0xFF6200EE)
-val purple700 = Color(0xFF3700B3)
-val teal200 = Color(0xFF03DAC5)
-
-val lightGreen = Color(0xFFD8E2DC)
-val baseGreen = Color(0xFF70c1b3)
-val lightPink = Color(0xFFFFE5D9)
-val basePink = Color(0xFFFFCAD4)
-val lightBlue = Color(0xFFa9d3ff)
-val baseBlue = Color(0xFF96c5f7)
-val lightYellow = Color(0xFFffee99)
