@@ -20,7 +20,7 @@ import com.wesleyelliott.weather.ui.choose.options.SelectDistanceChoice
 import com.wesleyelliott.weather.ui.choose.options.SelectEnvironmentChoice
 import com.wesleyelliott.weather.ui.choose.options.SelectTemperatureChoice
 import com.wesleyelliott.weather.ui.choose.options.SelectWeatherChoice
-import com.wesleyelliott.weather.ui.common.WeatherSelectFlow
+import com.wesleyelliott.weather.ui.common.AccordionLayout
 import com.wesleyelliott.weather.ui.theme.baseBlue
 import com.wesleyelliott.weather.ui.utils.isVertical
 
@@ -30,7 +30,7 @@ fun ChooseScreen(
 ) {
     val viewModel = viewModel<ChooseViewModel>()
     BoxWithConstraints {
-        WeatherSelectFlow(
+        AccordionLayout(
             isVertical = isVertical,
             collapsedSize = if (isVertical) maxHeight / 5 else maxWidth / 5
         ) {

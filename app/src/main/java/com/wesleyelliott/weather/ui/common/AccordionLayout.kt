@@ -17,44 +17,44 @@ enum class BoxState {
     Expanded,
 }
 
-internal interface WeatherSelectScopeContentFactory {
-    fun getContent(index: Int, scope: WeatherSelectScope): @Composable () -> Unit
+internal interface AccordionLayoutScopeContentFactory {
+    fun getContent(index: Int, scope: AccordionLayoutScope): @Composable () -> Unit
 }
 
 /**
- * Receiver scope which is used by the [WeatherSelectFlow].
+ * Receiver scope which is used by the [AccordionLayout].
  */
-interface WeatherSelectScope {
+interface AccordionLayoutScope {
 
     /**
-     * Add a single item to the accordion view
+     * Add a single item to the accordion layout
      * @param content content of the item. This has the [BoxState] as a receiver to allow different
      * contents based on what [BoxState] it is in.
      */
-    fun item(content: @Composable (WeatherSelectScope.(BoxState) -> Unit))
+    fun item(content: @Composable (AccordionLayoutScope.(BoxState) -> Unit))
 
     /**
-     * Show the next item in the accordion view
+     * Show the next item in the accordion layout
      */
     fun next()
 }
 
 /**
- * Represents the actual content of the accordion view
+ * Represents the actual content of the accordion layout
  */
-private class WeatherSelectContent(
-    val content: WeatherSelectScope.(index: Int) -> @Composable () -> Unit
+private class AccordionLayoutContent(
+    val content: AccordionLayoutScope.(index: Int) -> @Composable () -> Unit
 )
 
 /**
- * A state object that can be used to observe the current item of the accordion view, and can be
+ * A state object that can be used to observe the current item of the accordion layout, and can be
  * used to control the position.
- * Should be used with [rememberWeatherSelectState] in order to preserve the state across config
+ * Should be used with [rememberAccordionState] in order to preserve the state across config
  * changes.
  *
- * @param initialCurrentItem the initial current position of the accordion view
+ * @param initialCurrentItem the initial current position of the accordion layout
  */
-class WeatherSelectState(
+class AccordionLayoutState(
     initialCurrentItem: Int = 0
 ) {
     /**
@@ -66,12 +66,12 @@ class WeatherSelectState(
         /**
          * Saver implementation to save and restore the current position across config changes
          */
-        val Saver: Saver<WeatherSelectState, *> = Saver(
+        val Saver: Saver<AccordionLayoutState, *> = Saver(
             save = {
                 it.currentItem.value
             },
             restore = {
-                WeatherSelectState(
+                AccordionLayoutState(
                     initialCurrentItem = it
                 )
             }
@@ -80,54 +80,54 @@ class WeatherSelectState(
 }
 
 /**
- * Implementation of the [WeatherSelectScope] to manage the list of accordion views in the
- * [WeatherSelectFlow].
+ * Implementation of the [AccordionLayoutScope] to manage the list of accordion layouts in the
+ * [AccordionLayout].
  * @param maxHeight the maximum height of the container to expand to
  * @param maxWidth the maximum width of the container to expand to
- * @param collapsedSize the size of the accordion view when collapsed
+ * @param collapsedSize the size of the accordion layout when collapsed
  * @param isVertical if the layout should expand vertically, or horizontally
- * @param weatherSelectState the state used to control the accordion view position
+ * @param accordionLayoutState the state used to control the accordion layout position
  */
-private class WeatherSelectScopeImpl(
+private class AccordionLayoutScopeImpl(
     private val maxHeight: Dp,
     private val maxWidth: Dp,
     private val collapsedSize: Dp,
     private val isVertical: Boolean = true,
-    private val weatherSelectState: WeatherSelectState
-): WeatherSelectScope, WeatherSelectScopeContentFactory {
+    private val accordionLayoutState: AccordionLayoutState
+): AccordionLayoutScope, AccordionLayoutScopeContentFactory {
 
     /**
      * List of accordion items to show on the screen
      */
-    private val items = mutableListOf<WeatherSelectContent>()
+    private val items = mutableListOf<AccordionLayoutContent>()
     val totalSize get() = items.size
 
     /**
      * The current item to show in the expanded state
-     * This is just a backing field, the real state is controlled in the [weatherSelectState]
+     * This is just a backing field, the real state is controlled in the [accordionLayoutState]
      */
     private var currentItem: Int
-        get() = weatherSelectState.currentItem.value
+        get() = accordionLayoutState.currentItem.value
         set(value) {
-            weatherSelectState.currentItem.value = value
+            accordionLayoutState.currentItem.value = value
         }
 
     override fun next() {
         currentItem += 1
     }
 
-    override fun getContent(index: Int, scope: WeatherSelectScope): @Composable () -> Unit {
+    override fun getContent(index: Int, scope: AccordionLayoutScope): @Composable () -> Unit {
         val item = items[index]
         return item.content.invoke(scope, index)
     }
 
-    override fun item(content: @Composable WeatherSelectScope.(BoxState) -> Unit) {
+    override fun item(content: @Composable AccordionLayoutScope.(BoxState) -> Unit) {
         items.add(
-            WeatherSelectContent(
+            AccordionLayoutContent(
                 content = { index ->
                     @Composable {
                         /**
-                         * Get the current state of this specific accordion view.
+                         * Get the current state of this specific accordion layout.
                          * If the current position is bigger than the index, then this view is
                          * [BoxState.Collapsed]
                          */
@@ -191,9 +191,9 @@ private class WeatherSelectScopeImpl(
 }
 
 @Composable
-fun rememberWeatherSelectState(initialCurrentItem: Int = 0): WeatherSelectState {
-    return rememberSaveable(saver = WeatherSelectState.Saver) {
-        WeatherSelectState(initialCurrentItem)
+fun rememberAccordionState(initialCurrentItem: Int = 0): AccordionLayoutState {
+    return rememberSaveable(saver = AccordionLayoutState.Saver) {
+        AccordionLayoutState(initialCurrentItem)
     }
 }
 
@@ -203,35 +203,35 @@ fun rememberWeatherSelectState(initialCurrentItem: Int = 0): WeatherSelectState 
  *
  * The [content] block defines a DSL which allows you to emit different items of the accordion.
  * These are laid out in the same order as the items are emitted, and can be controlled via the
- * [WeatherSelectScope.next] function.
+ * [AccordionLayoutScope.next] function.
  *
  * @param modifier the modifier to apply to this layout
- * @param weatherSelectState a state that can be used by consumers to control the accordion
- * @param collapsedSize the height of the accordion view when collapsed
+ * @param accordionLayoutState a state that can be used by consumers to control the accordion
+ * @param collapsedSize the height of the accordion layout when collapsed
  * @param isVertical specify if the layout should be vertical or horizontal
- * @param content a block to describe the accordion items using the [WeatherSelectScope.item] method
+ * @param content a block to describe the accordion items using the [AccordionLayoutScope.item] method
  */
 @Composable
-fun WeatherSelectFlow(
+fun AccordionLayout(
     modifier: Modifier = Modifier,
-    weatherSelectState: WeatherSelectState = rememberWeatherSelectState(),
+    accordionLayoutState: AccordionLayoutState = rememberAccordionState(),
     collapsedSize: Dp = 150.dp,
     isVertical: Boolean = true,
-    content: WeatherSelectScope.() -> Unit
+    content: AccordionLayoutScope.() -> Unit
 ) {
     BoxWithConstraints(
         modifier = modifier.fillMaxSize()
     ) {
-        val scope = WeatherSelectScopeImpl(
+        val scope = AccordionLayoutScopeImpl(
             maxHeight = maxHeight,
             maxWidth = maxWidth,
             collapsedSize = collapsedSize,
             isVertical = isVertical,
-            weatherSelectState = weatherSelectState
+            accordionLayoutState = accordionLayoutState
         )
         scope.apply(content)
 
-        WeatherSelectFlowImpl(
+        AccordionLayoutImpl(
             modifier = modifier,
             itemCount = scope.totalSize,
             isVertical = isVertical,
@@ -243,12 +243,12 @@ fun WeatherSelectFlow(
 }
 
 @Composable
-private fun WeatherSelectFlowImpl(
+private fun AccordionLayoutImpl(
     modifier: Modifier = Modifier,
     itemCount: Int,
     isVertical: Boolean = true,
-    scope: WeatherSelectScope,
-    scopedFactory: WeatherSelectScopeContentFactory
+    scope: AccordionLayoutScope,
+    scopedFactory: AccordionLayoutScopeContentFactory
 ) {
     if (isVertical) {
         Column(
