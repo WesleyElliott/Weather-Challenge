@@ -2,13 +2,16 @@ package com.wesleyelliott.weather.ui.weather
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PinDrop
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,6 +71,18 @@ fun WeatherScreen(
                 fadeIn = true,
             )
         }
+
+        Icon(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .clip(CircleShape)
+                .clickable {
+                    // Todo: show settings for units
+                }
+                .padding(24.dp),
+            imageVector = Icons.Default.Settings,
+            contentDescription = "Settings"
+        )
 
         Box(
             modifier = Modifier
