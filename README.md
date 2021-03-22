@@ -1,27 +1,54 @@
-# Template repository
+# WhereTher?
 
-Template repository for the Jetpack Compose [#AndroidDevChallenge](https://developer.android.com/dev-challenge).
+<!--- Replace <OWNER> with your Github Username and <REPOSITORY> with the name of your repository. -->
+<!--- You can find both of these in the url bar when you open your repository in github. -->
+![Workflow result](https://github.com/WesleyElliott/Weather-Challenge/workflows/Check/badge.svg)
 
-## Getting started
-Copy this repository by pressing the "Use this template" button in Github.
-Clone your repository and open it in the latest [Android Studio (Canary build)](https://developer.android.com/studio/preview).
+<img src="/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" width="64">
 
-## Submission requirements
-- Follow the challenge description on the project website: [developer.android.com/dev-challenge](https://developer.android.com/dev-challenge)
-- All UI should be written using Jetpack Compose
-- The Github Actions workflow should complete successfully
-- Include two screenshots of your submission in the [results](results) folder. The names should be
-  screenshot_1.png and screenshot_2.png.
-- Include a screen record of your submission in the [results](results) folder. The name should be
-  video.mp4
-- Replace the contents of [README.md](README.md) with the contents of [README-template.md](README-template.md) and fill out the template.
+## :scroll: Description
+Why have an app to show you the weather when you can just look outside? Wouldn't it be more useful
+to have an app that can find the nearest location that has your ideal weather?
 
-## Code formatting
-The CI uses [Spotless](https://github.com/diffplug/spotless) to check if your code is formatted correctly and contains the right licenses.
-Internally, Spotless uses [ktlint](https://github.com/pinterest/ktlint) to check the formatting of your code.
-To set up ktlint correctly with Android Studio, follow one of the [listed setup options](https://github.com/pinterest/ktlint#-with-intellij-idea).
+This is a proof-of-concept app as a submission to week 4 of the
+[#AndroidDevChallenge](https://developer.android.com/dev-challenge).
 
-Before committing your code, run `./gradlew app:spotlessApply` to automatically format your code.
+## :bulb: Motivation and Context
+This design in based on a Dribbble submission (see below), as well as functionality I wanted to
+try implement in Jetpack Compose. The idea for the app was to have the user select a few options
+(such as a sunny, coast region with a warm temperature within 250km) and then present the nearest
+location that match those options.
+
+I opted for an "accordion" style picker to select the options, which ended up being a fun challenge
+to do in Compose. It was heavily inspired by the Column/Row composables, allowing a dynamic number
+of items to be added. Animations were also included to provide smooth transitions between the
+"collapsed" and "expanded" state.
+
+I also opted to roll my own navigation handler as I wanted some transitions between the 2 screens.
+Considering its a 2 screen app, this wasn't hard to handle - but doesn't scale well with more.
+
+## :camera_flash: Screenshots
+
+<img src="/results/screenshot_1.png" width="260">&emsp;<img src="/results/screenshot_2.png" width="260">
+
+## :star: Credits
+- Weather report screen design: [Dribbble](https://dribbble.com/shots/6250202-Daily-UI-037-Weather)
+- Images:
+  - [Tokyo](https://www.pexels.com/photo/2614818)
+  - [Paris](https://www.pexels.com/photo/3214982)
+  - [New York](https://www.pexels.com/photo/3889855)
+  - [Sydney](https://www.pexels.com/photo/1878293)
+  - [Rio](https://www.pexels.com/photo/3648269)
+  - [Cape Town](https://www.pexels.com/photo/963713)
+  - [Grand Canyon](https://www.pexels.com/photo/2542340)
+  - [Cappadocia](https://www.pexels.com/photo/2563593)
+  - [Namib Desert](https://www.pexels.com/photo/3714898)
+  - [Cliffs of Moher](https://www.pexels.com/photo/2382681)
+  - [Naples](https://www.pexels.com/photo/2972658)
+  - [San Fransisco](https://www.pexels.com/photo/1006965)
+  - [Dubai](https://www.pexels.com/photo/4491951)
+  - [The Alps](https://www.pexels.com/photo/2437296)
+  - [The Fjords](https://www.pexels.com/photo/1562058)
 
 ## License
 ```
