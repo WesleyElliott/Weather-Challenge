@@ -1,7 +1,13 @@
 package com.wesleyelliott.weather.data
 
+import android.os.Bundle
 import androidx.annotation.DrawableRes
 import com.wesleyelliott.weather.R
+
+private const val WEATHER_KEY = "weather"
+private const val TEMPERATURE_KEY = "temperature"
+private const val ENVIRONMENT_KEY = "environment"
+private const val DISTANCE_KEY = "distance"
 
 enum class WeatherOption {
     Sunny, Rainy, Snowy, Stormy, Windy, Calm
@@ -25,6 +31,34 @@ data class WeatherChoice(
     val environmentOption: EnvironmentOption? = null,
     val distanceOption: DistanceOption? = null,
 )
+
+/**
+ * Helper to convert a [WeatherChoice] to a [Bundle] for state saving
+ */
+fun WeatherChoice.toBundle(): Bundle {
+    return Bundle().apply {
+        putSerializable(WEATHER_KEY, weatherOption)
+        putSerializable(TEMPERATURE_KEY, temperatureOption)
+        putSerializable(ENVIRONMENT_KEY, environmentOption)
+        putSerializable(DISTANCE_KEY, distanceOption)
+    }
+}
+
+/**
+ * Helper to parse a [Bundle] to a [WeatherChoice] for state restoring
+ */
+fun Bundle.fromBundle(): WeatherChoice {
+    val weatherOption = getSerializable(WEATHER_KEY) as? WeatherOption
+    val temperatureOption = getSerializable(TEMPERATURE_KEY) as? TemperatureOption
+    val environmentOption = getSerializable(ENVIRONMENT_KEY) as? EnvironmentOption
+    val distanceOption = getSerializable(DISTANCE_KEY) as? DistanceOption
+    return WeatherChoice(
+        weatherOption,
+        temperatureOption,
+        environmentOption,
+        distanceOption
+    )
+}
 
 @DrawableRes
 fun WeatherOption.getIcon(): Int {
