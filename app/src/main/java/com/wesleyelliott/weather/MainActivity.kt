@@ -35,8 +35,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.wesleyelliott.weather.data.WeatherChoice
-import com.wesleyelliott.weather.data.fromBundle
-import com.wesleyelliott.weather.data.toBundle
 import com.wesleyelliott.weather.nav.Nav
 import com.wesleyelliott.weather.ui.choose.ChooseScreen
 import com.wesleyelliott.weather.ui.common.rememberAccordionState
@@ -105,19 +103,7 @@ fun WeatherApp(
     }
     val accordionLayoutState = rememberAccordionState()
 
-    val selectedWeather = rememberSaveable(
-        saver = Saver(
-            save = {
-                Bundle().apply {
-                    putBundle("selectedWeather", it.value?.toBundle())
-                }
-            },
-            restore = {
-                val selectedWeather = it.getBundle("selectedWeather")?.fromBundle()
-                mutableStateOf(selectedWeather)
-            }
-        )
-    ) {
+    val selectedWeather = rememberSaveable {
         mutableStateOf<WeatherChoice?>(null)
     }
 

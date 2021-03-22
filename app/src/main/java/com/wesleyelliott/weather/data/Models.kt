@@ -1,8 +1,9 @@
 package com.wesleyelliott.weather.data
 
-import android.os.Bundle
+import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import com.wesleyelliott.weather.R
+import kotlinx.parcelize.Parcelize
 
 private const val WEATHER_KEY = "weather"
 private const val TEMPERATURE_KEY = "temperature"
@@ -25,60 +26,36 @@ enum class DistanceOption {
     _100, _250, _500, Any
 }
 
+@Parcelize
 data class WeatherChoice(
     val weatherOption: WeatherOption? = null,
     val temperatureOption: TemperatureOption? = null,
     val environmentOption: EnvironmentOption? = null,
     val distanceOption: DistanceOption? = null,
-)
+) : Parcelable
 
+@Parcelize
 data class WeatherReport(
     val location: Location,
     val distance: Int,
     val currentTemp: Int,
     val currentConditions: WeatherOption,
     val forecast: List<Forecast> = emptyList()
-)
+) : Parcelable
 
+@Parcelize
 data class Forecast(
     val time: String,
     val conditions: WeatherOption,
     val temperature: Int
-)
+) : Parcelable
 
+@Parcelize
 data class Location(
     val name: String,
     val country: String,
     val imageUrl: String
-)
-
-/**
- * Helper to convert a [WeatherChoice] to a [Bundle] for state saving
- */
-fun WeatherChoice.toBundle(): Bundle {
-    return Bundle().apply {
-        putSerializable(WEATHER_KEY, weatherOption)
-        putSerializable(TEMPERATURE_KEY, temperatureOption)
-        putSerializable(ENVIRONMENT_KEY, environmentOption)
-        putSerializable(DISTANCE_KEY, distanceOption)
-    }
-}
-
-/**
- * Helper to parse a [Bundle] to a [WeatherChoice] for state restoring
- */
-fun Bundle.fromBundle(): WeatherChoice {
-    val weatherOption = getSerializable(WEATHER_KEY) as? WeatherOption
-    val temperatureOption = getSerializable(TEMPERATURE_KEY) as? TemperatureOption
-    val environmentOption = getSerializable(ENVIRONMENT_KEY) as? EnvironmentOption
-    val distanceOption = getSerializable(DISTANCE_KEY) as? DistanceOption
-    return WeatherChoice(
-        weatherOption,
-        temperatureOption,
-        environmentOption,
-        distanceOption
-    )
-}
+) : Parcelable
 
 @DrawableRes
 fun WeatherOption.getIcon(): Int {
@@ -109,11 +86,6 @@ fun EnvironmentOption.getIcon(): Int {
         EnvironmentOption.Coastal -> R.drawable.ic_coastal
         EnvironmentOption.Urban -> R.drawable.ic_urban
     }
-}
-
-@DrawableRes
-fun DistanceOption.getIcon(): Int {
-    return R.drawable.ic_distance
 }
 
 fun DistanceOption.getString(): String {
