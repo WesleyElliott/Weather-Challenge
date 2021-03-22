@@ -1,18 +1,21 @@
 package com.wesleyelliott.weather.ui.weather
 
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.PinDrop
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,11 +23,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.LastBaseline
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
 import com.google.accompanist.coil.CoilImage
+import com.google.accompanist.insets.statusBarsPadding
 import com.wesleyelliott.weather.R
 import com.wesleyelliott.weather.data.*
-import com.wesleyelliott.weather.ui.theme.midnightBlue800
 import com.wesleyelliott.weather.utils.MeasurementUnit
 import com.wesleyelliott.weather.utils.getLocaleUnits
 import java.util.*
@@ -51,12 +57,18 @@ private val backgroundShape = GenericShape { size, _ ->
     close()
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun WeatherScreen(
     weatherChoice: WeatherChoice
 ) {
-    val unit = Locale.getDefault().getLocaleUnits()
-    val weatherReport = WeatherRepository().loadWeather(weatherChoice, unit)
+    val settingsVisible = remember {
+        mutableStateOf(false)
+    }
+    val unit = remember {
+        mutableStateOf(Locale.getDefault().getLocaleUnits())
+    }
+    val weatherReport = WeatherRepository().loadWeather(weatherChoice, unit.value)
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -74,19 +86,96 @@ fun WeatherScreen(
             )
         }
 
-        Icon(
+        Box(
             modifier = Modifier
-                .padding(top = 36.dp)
+                .statusBarsPadding()
+                .padding(end = 8.dp)
                 .align(Alignment.TopEnd)
-                .clip(CircleShape)
-                .clickable {
-                    // Todo: show settings for units
+        ) {
+
+            if (settingsVisible.value) {
+                Popup(
+                    alignment = Alignment.TopEnd,
+                    onDismissRequest = {
+                       settingsVisible.value = false
+                    },
+                    offset = IntOffset(
+                        x = 0,
+                        y = 140
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .width(160.dp)
+                            .background(
+                                MaterialTheme.colors.background,
+                                MaterialTheme.shapes.medium
+                            )
+                            .padding(4.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(MaterialTheme.shapes.medium)
+                                .clickable {
+                                    unit.value = MeasurementUnit.METRIC
+                                }
+                                .padding(vertical = 12.dp, horizontal = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Metric",
+                                style = MaterialTheme.typography.h6.copy(fontSize = 18.sp)
+                            )
+
+                            if (unit.value == MeasurementUnit.UK || unit.value == MeasurementUnit.METRIC) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "Metric Setting"
+                                )
+                            }
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(MaterialTheme.shapes.medium)
+                                .clickable {
+                                    unit.value = MeasurementUnit.IMPERIAL
+                                }
+                                .padding(vertical = 12.dp, horizontal = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Imperial",
+                                style = MaterialTheme.typography.h6.copy(fontSize = 18.sp),
+                            )
+                            if (unit.value == MeasurementUnit.IMPERIAL) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "Imperial Setting"
+                                )
+                            }
+                        }
+                    }
                 }
-                .padding(24.dp),
-            imageVector = Icons.Default.Settings,
-            contentDescription = "Settings",
-            tint = midnightBlue800,
-        )
+            }
+
+
+
+            Icon(
+                modifier = Modifier
+                    .clip(MaterialTheme.shapes.medium)
+                    .background(MaterialTheme.colors.background)
+                    .clickable {
+                        settingsVisible.value = true
+                    }
+                    .padding(12.dp),
+                imageVector = Icons.Default.Settings,
+                contentDescription = "Settings",
+                tint = MaterialTheme.colors.onBackground,
+            )
+        }
 
         Box(
             modifier = Modifier
@@ -102,15 +191,15 @@ fun WeatherScreen(
                     .padding(
                         top = 40.dp,
                         bottom = 30.dp,
-                        start = 40.dp,
-                        end = 50.dp
+                        start = 20.dp,
+                        end = 20.dp
                     ),
                 verticalArrangement = Arrangement.SpaceAround
             ) {
 
                 Column {
                     Text(
-                        modifier = Modifier.padding(end = 18.dp),
+                        modifier = Modifier.padding(end = 48.dp),
                         text = weatherReport.location.name,
                         style = MaterialTheme.typography.h3.copy(fontWeight = FontWeight.Light),
                     )
@@ -139,7 +228,7 @@ fun WeatherScreen(
                 ) {
                     Text(
                         modifier = Modifier.alignByBaseline(),
-                        text = weatherReport.currentTemp.formatTemperature(unit),
+                        text = weatherReport.currentTemp.formatTemperature(unit.value),
                         style = MaterialTheme.typography.h1
                     )
 
@@ -191,7 +280,7 @@ fun WeatherScreen(
                     weatherReport.forecast.forEach { forecast ->
                         ForecastBox(
                             time = forecast.time,
-                            temperature = forecast.temperature.formatTemperature(unit),
+                            temperature = forecast.temperature.formatTemperature(unit.value),
                             icon = forecast.conditions.getIcon()
                         )
                     }
