@@ -62,6 +62,10 @@ class AccordionLayoutState(
      */
     val currentItem = mutableStateOf(initialCurrentItem)
 
+    fun goBack() {
+        currentItem.value -= 1
+    }
+
     companion object {
         /**
          * Saver implementation to save and restore the current position across config changes
