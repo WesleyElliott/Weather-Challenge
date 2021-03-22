@@ -3,6 +3,8 @@ package com.wesleyelliott.weather.ui.choose.options
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.google.accompanist.insets.statusBarsPadding
 import com.wesleyelliott.weather.R
 import com.wesleyelliott.weather.data.TemperatureOption
 import com.wesleyelliott.weather.data.getIcon
@@ -47,6 +49,7 @@ fun SelectTemperatureChoice(
         if (expanded) {
             Column {
                 ExpandedChoiceHeading(
+                    modifier = if (!isVertical) Modifier.statusBarsPadding() else Modifier,
                     title = "What temperature?"
                 )
 
@@ -67,6 +70,7 @@ fun SelectTemperatureChoice(
         } else {
             val temperature = selectedTemperatureOption ?: TemperatureOption.Any
             CollapsedChoiceHeading(
+                modifier = if (!isVertical) Modifier.statusBarsPadding() else Modifier,
                 title = temperature.name,
                 icon = temperature.getIcon()
             )

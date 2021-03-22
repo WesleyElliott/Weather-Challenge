@@ -3,6 +3,8 @@ package com.wesleyelliott.weather.ui.choose.options
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.google.accompanist.insets.statusBarsPadding
 import com.wesleyelliott.weather.data.DistanceOption
 import com.wesleyelliott.weather.data.getIcon
 import com.wesleyelliott.weather.data.getString
@@ -10,6 +12,7 @@ import com.wesleyelliott.weather.ui.common.BoxState
 import com.wesleyelliott.weather.ui.common.GridLayout
 import com.wesleyelliott.weather.ui.common.TextButton
 import com.wesleyelliott.weather.ui.common.items
+import com.wesleyelliott.weather.ui.utils.isVertical
 
 private val distanceChoices = listOf(
     TextOption(
@@ -48,6 +51,7 @@ fun SelectDistanceChoice(
         if (expanded) {
             Column {
                 ExpandedChoiceHeading(
+                    modifier = if (!isVertical) Modifier.statusBarsPadding() else Modifier,
                     title = "What distance?"
                 )
 
@@ -67,6 +71,7 @@ fun SelectDistanceChoice(
         } else {
             val distance = selectedDistanceOption ?: DistanceOption.Any
             CollapsedChoiceHeading(
+                modifier = if (!isVertical) Modifier.statusBarsPadding() else Modifier,
                 title = distance.getString(),
                 icon = distance.getIcon()
             )

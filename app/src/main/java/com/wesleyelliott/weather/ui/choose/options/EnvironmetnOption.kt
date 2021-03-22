@@ -3,6 +3,8 @@ package com.wesleyelliott.weather.ui.choose.options
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.google.accompanist.insets.statusBarsPadding
 import com.wesleyelliott.weather.R
 import com.wesleyelliott.weather.data.EnvironmentOption
 import com.wesleyelliott.weather.data.getIcon
@@ -52,6 +54,7 @@ fun SelectEnvironmentChoice(
         if (expanded) {
             Column {
                 ExpandedChoiceHeading(
+                    modifier = if (!isVertical) Modifier.statusBarsPadding() else Modifier,
                     title = "What environment?"
                 )
 
@@ -72,6 +75,7 @@ fun SelectEnvironmentChoice(
         } else {
             val environment = selectedEnvironmentOption ?: EnvironmentOption.Urban
             CollapsedChoiceHeading(
+                modifier = if (!isVertical) Modifier.statusBarsPadding() else Modifier,
                 title = environment.name,
                 icon = environment.getIcon()
             )

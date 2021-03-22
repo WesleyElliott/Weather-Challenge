@@ -3,6 +3,8 @@ package com.wesleyelliott.weather.ui.choose.options
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.google.accompanist.insets.statusBarsPadding
 import com.wesleyelliott.weather.R
 import com.wesleyelliott.weather.data.WeatherOption
 import com.wesleyelliott.weather.data.getIcon
@@ -62,6 +64,7 @@ fun SelectWeatherChoice(
         if (expanded) {
             Column {
                 ExpandedChoiceHeading(
+                    modifier = Modifier.statusBarsPadding(),
                     title = "What conditions?"
                 )
 
@@ -83,6 +86,7 @@ fun SelectWeatherChoice(
         } else {
             val weather = selectedWeather ?: WeatherOption.Sunny
             CollapsedChoiceHeading(
+                modifier = Modifier.statusBarsPadding(),
                 title = weather.name,
                 icon = weather.getIcon()
             )

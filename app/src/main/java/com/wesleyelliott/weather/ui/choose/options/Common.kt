@@ -22,7 +22,7 @@ import com.wesleyelliott.weather.ui.common.BoxState
 import com.wesleyelliott.weather.ui.utils.isVertical
 
 private val TITLE_HEIGHT_VERTICAL = 120.dp
-private val TITLE_HEIGHT_HORIZONTAL = 80.dp
+private val TITLE_HEIGHT_HORIZONTAL = 50.dp
 
 data class IconOption<T>(
     val text: String,
@@ -64,12 +64,13 @@ fun SelectChoiceWrapper(
  */
 @Composable
 fun CollapsedChoiceHeading(
+    modifier: Modifier = Modifier,
     title: String,
     @DrawableRes icon: Int
 ) {
     if (isVertical) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -90,7 +91,7 @@ fun CollapsedChoiceHeading(
         }
     } else {
         Column(
-            modifier = Modifier.fillMaxHeight(),
+            modifier = modifier.fillMaxHeight(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
@@ -119,10 +120,11 @@ fun CollapsedChoiceHeading(
  */
 @Composable
 fun ExpandedChoiceHeading(
+    modifier: Modifier = Modifier,
     title: String
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(
                 if (isVertical) TITLE_HEIGHT_VERTICAL else TITLE_HEIGHT_HORIZONTAL
