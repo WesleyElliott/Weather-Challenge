@@ -49,6 +49,7 @@ Considering its a 2 screen app, this wasn't hard to handle - but doesn't scale w
   - [Dubai](https://www.pexels.com/photo/4491951)
   - [The Alps](https://www.pexels.com/photo/2437296)
   - [The Fjords](https://www.pexels.com/photo/1562058)
+- Icons: [Freepik](https://www.freepik.com) from [Flaticon](https://www.flaticon.com/)
 
 ## License
 ```
