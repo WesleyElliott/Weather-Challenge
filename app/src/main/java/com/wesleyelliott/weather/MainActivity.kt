@@ -30,11 +30,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.wesleyelliott.weather.data.WeatherChoice
+import com.wesleyelliott.weather.data.fromBundle
+import com.wesleyelliott.weather.data.toBundle
 import com.wesleyelliott.weather.nav.Nav
 import com.wesleyelliott.weather.ui.choose.ChooseScreen
 import com.wesleyelliott.weather.ui.common.rememberAccordionState
@@ -57,9 +60,16 @@ class MainActivity : AppCompatActivity(), BackDispatcher {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
+            val defaultUnitSystem = remember {
+                mutableStateOf(Locale.getDefault().getLocaleUnits())
+            }
             ProvideWindowInsets {
-                MyTheme(darkTheme = true) {
-                    WeatherApp(this)
+                CompositionLocalProvider(
+                    LocalUnitProvider provides defaultUnitSystem
+                ) {
+                    MyTheme(darkTheme = true) {
+                        WeatherApp(this)
+                    }
                 }
             }
         }
@@ -83,7 +93,19 @@ fun WeatherApp(
     }
     val accordionLayoutState = rememberAccordionState()
 
-    val selectedWeather = remember {
+    val selectedWeather = rememberSaveable(
+        saver = Saver(
+            save = {
+                Bundle().apply {
+                    putBundle("selectedWeather", it.value?.toBundle())
+                }
+            },
+            restore = {
+                val selectedWeather = it.getBundle("selectedWeather")?.fromBundle()
+                mutableStateOf(selectedWeather)
+            }
+        )
+    ) {
         mutableStateOf<WeatherChoice?>(null)
     }
 
@@ -112,45 +134,38 @@ fun WeatherApp(
         }
     }
 
-    val defaultUnitSystem = remember {
-        mutableStateOf(Locale.getDefault().getLocaleUnits())
-    }
-    CompositionLocalProvider(
-        LocalUnitProvider provides defaultUnitSystem
+    Surface(
+        color = MaterialTheme.colors.background
     ) {
-        Surface(
-            color = MaterialTheme.colors.background
+        AnimatedVisibility(
+            visible = navState.value == Nav.Choose,
+            enter = slideInHorizontally(
+                initialOffsetX = { -it }
+            ),
+            exit = slideOutHorizontally(
+                targetOffsetX = { -it }
+            )
         ) {
-            AnimatedVisibility(
-                visible = navState.value == Nav.Choose,
-                enter = slideInHorizontally(
-                    initialOffsetX = { -it }
-                ),
-                exit = slideOutHorizontally(
-                    targetOffsetX = { -it }
-                )
+            ChooseScreen(
+                accordionLayoutState = accordionLayoutState
             ) {
-                ChooseScreen(
-                    accordionLayoutState = accordionLayoutState
-                ) {
-                    navState.value = Nav.Weather(it)
-                    selectedWeather.value = it
-                }
+                navState.value = Nav.Weather(it)
+                selectedWeather.value = it
             }
+        }
 
-            AnimatedVisibility(
-                visible = navState.value is Nav.Weather,
-                enter = slideInHorizontally(
-                    initialOffsetX = { it }
-                ),
-                exit = slideOutHorizontally(
-                    targetOffsetX = { it }
-                )
-            ) {
-                val current = selectedWeather.value
-                if (current != null) {
-                    WeatherScreen(weatherChoice = current)
-                }
+        AnimatedVisibility(
+            visible = navState.value is Nav.Weather,
+            enter = slideInHorizontally(
+                initialOffsetX = { it }
+            ),
+            exit = slideOutHorizontally(
+                targetOffsetX = { it }
+            )
+        ) {
+            val current = selectedWeather.value
+            if (current != null) {
+                WeatherScreen(weatherChoice = current)
             }
         }
     }
