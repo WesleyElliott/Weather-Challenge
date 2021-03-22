@@ -43,7 +43,7 @@ import com.wesleyelliott.weather.ui.weather.WeatherScreen
 import com.wesleyelliott.weather.utils.LocalUnitProvider
 import com.wesleyelliott.weather.utils.MeasurementUnit
 import com.wesleyelliott.weather.utils.getLocaleUnits
-import java.util.Locale
+import java.util.*
 
 /**
  * Allow the [WeatherApp] to dispatch the system [onBackPressed] to the Activity
@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity(), BackDispatcher {
                 CompositionLocalProvider(
                     LocalUnitProvider provides defaultUnitSystem
                 ) {
-                    MyTheme(darkTheme = true) {
+                    MyTheme() {
                         WeatherApp(this)
                     }
                 }
