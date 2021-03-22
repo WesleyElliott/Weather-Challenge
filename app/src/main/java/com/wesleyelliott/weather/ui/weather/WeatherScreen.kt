@@ -223,6 +223,7 @@ fun WeatherScreenLandscape(
         ) {
 
             WeatherReport(
+                modifier = Modifier.padding(end = 50.dp),
                 weatherReport = weatherReport,
                 unit = unit
             )
@@ -236,11 +237,12 @@ fun WeatherScreenLandscape(
  */
 @Composable
 private fun WeatherReport(
+    modifier: Modifier = Modifier,
     weatherReport: WeatherReport,
     unit: MeasurementUnit
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxHeight()
             .padding(
                 top = 40.dp,
