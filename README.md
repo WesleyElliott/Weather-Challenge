@@ -4,8 +4,6 @@
 <!--- You can find both of these in the url bar when you open your repository in github. -->
 ![Workflow result](https://github.com/WesleyElliott/Weather-Challenge/workflows/Check/badge.svg)
 
-<img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" width="64">
-
 ## :scroll: Description
 Why have an app to show you the weather when you can just look outside? Wouldn't it be more useful
 to have an app that can find the nearest location that has your ideal weather?
