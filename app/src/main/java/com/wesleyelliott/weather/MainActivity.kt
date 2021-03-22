@@ -30,11 +30,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 import com.google.accompanist.insets.ProvideWindowInsets
-import com.google.accompanist.insets.statusBarsPadding
 import com.wesleyelliott.weather.data.WeatherChoice
 import com.wesleyelliott.weather.nav.Nav
 import com.wesleyelliott.weather.ui.choose.ChooseScreen
@@ -111,7 +109,6 @@ fun WeatherApp(
     }
 
     Surface(
-        modifier = Modifier.statusBarsPadding(),
         color = MaterialTheme.colors.background
     ) {
         AnimatedVisibility(

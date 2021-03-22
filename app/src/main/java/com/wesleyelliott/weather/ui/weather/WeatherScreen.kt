@@ -74,6 +74,7 @@ fun WeatherScreen(
 
         Icon(
             modifier = Modifier
+                .padding(top = 36.dp)
                 .align(Alignment.TopEnd)
                 .clip(CircleShape)
                 .clickable {

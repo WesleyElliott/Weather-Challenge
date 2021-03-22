@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.insets.statusBarsPadding
 import com.wesleyelliott.weather.data.WeatherChoice
 import com.wesleyelliott.weather.ui.choose.options.SelectDistanceChoice
 import com.wesleyelliott.weather.ui.choose.options.SelectEnvironmentChoice
@@ -48,7 +49,7 @@ fun ChooseScreen(
     )
 
     BoxWithConstraints(
-        modifier = modifier
+        modifier = Modifier.statusBarsPadding(),
     ) {
         AccordionLayout(
             isVertical = isVertical,
