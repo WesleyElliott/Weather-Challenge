@@ -27,6 +27,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -39,6 +40,9 @@ import com.wesleyelliott.weather.ui.choose.ChooseScreen
 import com.wesleyelliott.weather.ui.common.rememberAccordionState
 import com.wesleyelliott.weather.ui.theme.MyTheme
 import com.wesleyelliott.weather.ui.weather.WeatherScreen
+import com.wesleyelliott.weather.utils.LocalUnitProvider
+import com.wesleyelliott.weather.utils.getLocaleUnits
+import java.util.*
 
 /**
  * Allow the [WeatherApp] to dispatch the system [onBackPressed] to the Activity
@@ -108,38 +112,45 @@ fun WeatherApp(
         }
     }
 
-    Surface(
-        color = MaterialTheme.colors.background
+    val defaultUnitSystem = remember {
+        mutableStateOf(Locale.getDefault().getLocaleUnits())
+    }
+    CompositionLocalProvider(
+        LocalUnitProvider provides defaultUnitSystem
     ) {
-        AnimatedVisibility(
-            visible = navState.value == Nav.Choose,
-            enter = slideInHorizontally(
-                initialOffsetX = { -it }
-            ),
-            exit = slideOutHorizontally(
-                targetOffsetX = { -it }
-            )
+        Surface(
+            color = MaterialTheme.colors.background
         ) {
-            ChooseScreen(
-                accordionLayoutState = accordionLayoutState
+            AnimatedVisibility(
+                visible = navState.value == Nav.Choose,
+                enter = slideInHorizontally(
+                    initialOffsetX = { -it }
+                ),
+                exit = slideOutHorizontally(
+                    targetOffsetX = { -it }
+                )
             ) {
-                navState.value = Nav.Weather(it)
-                selectedWeather.value = it
+                ChooseScreen(
+                    accordionLayoutState = accordionLayoutState
+                ) {
+                    navState.value = Nav.Weather(it)
+                    selectedWeather.value = it
+                }
             }
-        }
 
-        AnimatedVisibility(
-            visible = navState.value is Nav.Weather,
-            enter = slideInHorizontally(
-                initialOffsetX = { it }
-            ),
-            exit = slideOutHorizontally(
-                targetOffsetX = { it }
-            )
-        ) {
-            val current = selectedWeather.value
-            if (current != null) {
-                WeatherScreen(weatherChoice = current)
+            AnimatedVisibility(
+                visible = navState.value is Nav.Weather,
+                enter = slideInHorizontally(
+                    initialOffsetX = { it }
+                ),
+                exit = slideOutHorizontally(
+                    targetOffsetX = { it }
+                )
+            ) {
+                val current = selectedWeather.value
+                if (current != null) {
+                    WeatherScreen(weatherChoice = current)
+                }
             }
         }
     }

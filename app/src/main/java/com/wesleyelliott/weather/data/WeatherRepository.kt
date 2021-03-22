@@ -1,7 +1,5 @@
 package com.wesleyelliott.weather.data
 
-import com.wesleyelliott.weather.utils.MeasurementUnit
-
 private val mockUrbanLocations = listOf(
     Location(
         name = "Tokyo",
@@ -116,42 +114,32 @@ private val mockTemperatures = mapOf(
 
 class WeatherRepository {
 
-    fun loadWeather(weatherChoice: WeatherChoice, unit: MeasurementUnit): WeatherReport {
+    fun loadWeather(weatherChoice: WeatherChoice): WeatherReport {
         val location = mockLocations[weatherChoice.environmentOption]?.random() ?: Location("Unknown", "", "")
         val distance =  mockDistances[weatherChoice.distanceOption]?.random() ?: 50
         val currentTemperature = mockTemperatures[weatherChoice.temperatureOption]?.random() ?: 15
         val weatherOption = weatherChoice.weatherOption!!
         val forecast = listOf(
             Forecast(
-                "19:00", weatherOption, (currentTemperature - 1).convertTemp(unit)
+                "19:00", weatherOption, (currentTemperature - 1)
             ),
             Forecast(
-                "21:00", weatherOption, (currentTemperature - 2).convertTemp(unit)
+                "21:00", weatherOption, (currentTemperature - 2)
             ),
             Forecast(
-                "23:00", weatherOption, (currentTemperature - 4).convertTemp(unit)
+                "23:00", weatherOption, (currentTemperature - 4)
             ),
             Forecast(
-                "01:00", weatherOption, (currentTemperature - 5).convertTemp(unit)
+                "01:00", weatherOption, (currentTemperature - 5)
             ),
         )
 
         return WeatherReport(
             location = location,
             distance = distance,
-            distanceUnit = if (unit == MeasurementUnit.METRIC) DistanceUnit.Km else DistanceUnit.Mi,
-            currentTemp = currentTemperature.convertTemp(unit),
+            currentTemp = currentTemperature,
             currentConditions = weatherOption,
             forecast = forecast
         )
-    }
-
-    private fun Int.convertTemp(unit: MeasurementUnit): Int {
-        if (unit == MeasurementUnit.IMPERIAL) {
-            return (this * (9f/5f) + 32).toInt()
-        }
-
-        // For metric and UK, just return the value - its in metric already
-        return this
     }
 }

@@ -30,10 +30,12 @@ import androidx.compose.ui.window.Popup
 import com.google.accompanist.coil.CoilImage
 import com.google.accompanist.insets.statusBarsPadding
 import com.wesleyelliott.weather.R
-import com.wesleyelliott.weather.data.*
+import com.wesleyelliott.weather.data.WeatherChoice
+import com.wesleyelliott.weather.data.WeatherReport
+import com.wesleyelliott.weather.data.WeatherRepository
+import com.wesleyelliott.weather.data.getIcon
+import com.wesleyelliott.weather.utils.LocalUnitProvider
 import com.wesleyelliott.weather.utils.MeasurementUnit
-import com.wesleyelliott.weather.utils.getLocaleUnits
-import java.util.*
 
 private const val backgroundShapeOffset = 20f
 private val backgroundShape = GenericShape { size, _ ->
@@ -66,11 +68,10 @@ fun WeatherScreen(
     val settingsVisible = remember {
         mutableStateOf(false)
     }
-    val unit = remember {
-        mutableStateOf(Locale.getDefault().getLocaleUnits())
-    }
+    val unit = LocalUnitProvider.current
+
     val weatherReport = remember {
-        weatherRepository.loadWeather(weatherChoice, unit.value)
+        weatherRepository.loadWeather(weatherChoice)
     }
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -220,7 +221,7 @@ fun WeatherScreen(
                             contentDescription = "Map icon"
                         )
                         Text(
-                            text = formatDistance(weatherReport),
+                            text = unit.value.formatDistance(weatherReport),
                             style = MaterialTheme.typography.subtitle1
                         )
                     }
@@ -319,18 +320,28 @@ private fun ForecastBox(
     }
 }
 
-private fun formatDistance(weatherReport: WeatherReport): String {
-    val unitSuffix = when (weatherReport.distanceUnit) {
-        DistanceUnit.Km -> "km away"
-        DistanceUnit.Mi -> "miles away"
+private fun Int.convertTemp(unit: MeasurementUnit): Int {
+    if (unit == MeasurementUnit.IMPERIAL) {
+        return (this * (9f/5f) + 32).toInt()
+    }
+
+    // For metric and UK, just return the value - its in metric already
+    return this
+}
+
+private fun MeasurementUnit.formatDistance(weatherReport: WeatherReport): String {
+    val unitSuffix = when (this) {
+        MeasurementUnit.METRIC -> "km away"
+        MeasurementUnit.IMPERIAL, MeasurementUnit.UK -> "miles away"
     }
     return "${weatherReport.distance} $unitSuffix"
 }
 
 private fun Int.formatTemperature(unit: MeasurementUnit): String {
+    val convertedTemp = this.convertTemp(unit)
     return if (unit == MeasurementUnit.METRIC || unit == MeasurementUnit.UK) {
-        "$this°C"
+        "$convertedTemp°C"
     } else {
-        "$this°F"
+        "$convertedTemp°F"
     }
 }
