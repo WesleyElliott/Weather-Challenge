@@ -28,6 +28,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -80,6 +81,10 @@ fun WeatherApp(
     }
     val accordionLayoutState = rememberAccordionState()
 
+    val selectedWeather = remember {
+        mutableStateOf<WeatherChoice?>(null)
+    }
+
     /**
      * Consume the back button to allow going back from the [WeatherScreen] to the [ChooseScreen].
      * If we're on the [ChooseScreen], go back in the accordion until the first item is expanded.
@@ -122,6 +127,7 @@ fun WeatherApp(
                 accordionLayoutState = accordionLayoutState
             ) {
                 navState.value = Nav.Weather(it)
+                selectedWeather.value = it
             }
         }
 
@@ -134,12 +140,9 @@ fun WeatherApp(
                 targetOffsetX = { it }
             )
         ) {
-            val current = navState.value
-            if (current is Nav.Weather) {
-                WeatherScreen(weatherChoice = current.weatherChoice)
-            } else {
-                // Small hack to keep the WeatherScreen visible during this transition.
-                WeatherScreen(weatherChoice = WeatherChoice())
+            val current = selectedWeather.value
+            if (current != null) {
+                WeatherScreen(weatherChoice = current)
             }
         }
     }

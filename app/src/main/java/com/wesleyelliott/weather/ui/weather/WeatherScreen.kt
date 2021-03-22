@@ -19,7 +19,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.coil.CoilImage
 import com.wesleyelliott.weather.R
-import com.wesleyelliott.weather.data.WeatherChoice
+import com.wesleyelliott.weather.data.*
+import com.wesleyelliott.weather.utils.MeasurementUnit
+import com.wesleyelliott.weather.utils.getLocaleUnits
+import java.util.*
 
 private const val backgroundShapeOffset = 20f
 private val backgroundShape = GenericShape { size, _ ->
@@ -47,6 +50,9 @@ private val backgroundShape = GenericShape { size, _ ->
 fun WeatherScreen(
     weatherChoice: WeatherChoice
 ) {
+    val unit = Locale.getDefault().getLocaleUnits()
+    val weatherReport = WeatherRepository().loadWeather(weatherChoice, unit)
+
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
@@ -56,9 +62,9 @@ fun WeatherScreen(
         ) {
             CoilImage(
                 modifier = Modifier.fillMaxSize(),
-                data = "https://i.pinimg.com/originals/2e/80/4a/2e804af2fe69257bc01a54ba74d88848.jpg",
+                data = weatherReport.location.imageUrl,
                 contentScale = ContentScale.FillBounds,
-                contentDescription = "My content description",
+                contentDescription = weatherReport.location.name,
                 fadeIn = true,
             )
         }
@@ -84,17 +90,17 @@ fun WeatherScreen(
             ) {
 
                 Column {
-                    Text("Tokyo", style = MaterialTheme.typography.h2)
+                    Text(weatherReport.location.name, style = MaterialTheme.typography.h2)
                     Row(
                         modifier = Modifier.padding(top = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
                             Icons.Default.PinDrop,
-                            contentDescription = ""
+                            contentDescription = "Map icon"
                         )
                         Text(
-                            text = "183km away",
+                            text = formatDistance(weatherReport),
                             style = MaterialTheme.typography.subtitle1
                         )
                     }
@@ -105,7 +111,7 @@ fun WeatherScreen(
                 ) {
                     Text(
                         modifier = Modifier.alignByBaseline(),
-                        text = "14°",
+                        text = weatherReport.currentTemp.formatTemperature(unit),
                         style = MaterialTheme.typography.h1
                     )
 
@@ -119,12 +125,14 @@ fun WeatherScreen(
                         ) {
                             Icon(
                                 modifier = Modifier.size(24.dp),
-                                painter = painterResource(id = R.drawable.ic_sun),
-                                contentDescription = ""
+                                painter = painterResource(
+                                    id = weatherReport.currentConditions.getIcon()
+                                ),
+                                contentDescription = weatherReport.currentConditions.name
                             )
                             Text(
                                 modifier = Modifier.padding(start = 4.dp),
-                                text = "Sunny",
+                                text = weatherReport.currentConditions.name,
                                 style = MaterialTheme.typography.caption
                             )
                         }
@@ -134,8 +142,8 @@ fun WeatherScreen(
                         ) {
                             Icon(
                                 modifier = Modifier.size(24.dp),
-                                painter = painterResource(id = R.drawable.ic_sun),
-                                contentDescription = ""
+                                painter = painterResource(id = R.drawable.ic_nature),
+                                contentDescription = "High pollen"
                             )
                             Text(
                                 modifier = Modifier.padding(start = 4.dp),
@@ -152,28 +160,13 @@ fun WeatherScreen(
                         .padding(horizontal = 14.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    ForecastBox(
-                        time = "19:00",
-                        temperature = "12°",
-                        icon = R.drawable.ic_sun
-                    )
-
-                    ForecastBox(
-                        time = "21:00",
-                        temperature = "11°",
-                        icon = R.drawable.ic_sun
-                    )
-
-                    ForecastBox(
-                        time = "23:00",
-                        temperature = "10°",
-                        icon = R.drawable.ic_sun
-                    )
-                    ForecastBox(
-                        time = "01:00",
-                        temperature = "8°",
-                        icon = R.drawable.ic_sun
-                    )
+                    weatherReport.forecast.forEach { forecast ->
+                        ForecastBox(
+                            time = forecast.time,
+                            temperature = forecast.temperature.formatTemperature(unit),
+                            icon = forecast.conditions.getIcon()
+                        )
+                    }
                 }
             }
         }
@@ -203,5 +196,21 @@ private fun ForecastBox(
             text = temperature,
             style = MaterialTheme.typography.subtitle1,
         )
+    }
+}
+
+private fun formatDistance(weatherReport: WeatherReport): String {
+    val unitSuffix = when (weatherReport.distanceUnit) {
+        DistanceUnit.Km -> "km away"
+        DistanceUnit.Mi -> "miles away"
+    }
+    return "${weatherReport.distance} $unitSuffix"
+}
+
+private fun Int.formatTemperature(unit: MeasurementUnit): String {
+    return if (unit == MeasurementUnit.METRIC || unit == MeasurementUnit.UK) {
+        "$this°C"
+    } else {
+        "$this°F"
     }
 }

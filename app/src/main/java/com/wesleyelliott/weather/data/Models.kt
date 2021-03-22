@@ -32,6 +32,31 @@ data class WeatherChoice(
     val distanceOption: DistanceOption? = null,
 )
 
+data class WeatherReport(
+    val location: Location,
+    val distance: Int,
+    val distanceUnit: DistanceUnit,
+    val currentTemp: Int,
+    val currentConditions: WeatherOption,
+    val forecast: List<Forecast> = emptyList()
+)
+
+data class Forecast(
+    val time: String,
+    val conditions: WeatherOption,
+    val temperature: Int
+)
+
+data class Location(
+    val name: String,
+    val imageUrl: String
+)
+
+enum class DistanceUnit {
+    Km,
+    Mi
+}
+
 /**
  * Helper to convert a [WeatherChoice] to a [Bundle] for state saving
  */
