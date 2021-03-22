@@ -35,6 +35,10 @@ import com.wesleyelliott.weather.utils.LocalUnitProvider
 import com.wesleyelliott.weather.utils.MeasurementUnit
 
 private const val backgroundShapeOffset = 20f
+
+/**
+ * Custom shape for the background of the weather screen in portrait mode
+ */
 private val backgroundShapePortrait = GenericShape { size, _ ->
     moveTo(0f, backgroundShapeOffset)
     cubicTo(
@@ -56,6 +60,9 @@ private val backgroundShapePortrait = GenericShape { size, _ ->
     close()
 }
 
+/**
+ * Custom shape for the background of the weather screen in landscape mode
+ */
 private val backgroundShapeLandscape = GenericShape { size, _ ->
     moveTo(size.width * 0.7f, 0f)
 
@@ -119,7 +126,9 @@ fun WeatherScreen(
     }
 }
 
-
+/**
+ * Portrait implementation of the weather report screen
+ */
 @Composable
 fun WeatherScreenPortrait(
     weatherReport: WeatherReport,
@@ -167,7 +176,9 @@ fun WeatherScreenPortrait(
     }
 }
 
-
+/**
+ * Landscape implementation of the weather report screen
+ */
 @Composable
 fun WeatherScreenLandscape(
     weatherReport: WeatherReport,
@@ -176,7 +187,6 @@ fun WeatherScreenLandscape(
     onSettingsChange: (Boolean) -> Unit,
     onMeasurementChange: (MeasurementUnit) -> Unit
 ) {
-
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -220,6 +230,10 @@ fun WeatherScreenLandscape(
     }
 }
 
+/**
+ * The actual data content of the screen to display the current conditions and forecasted
+ * conditions, as well as the location
+ */
 @Composable
 private fun WeatherReport(
     weatherReport: WeatherReport,
@@ -301,7 +315,7 @@ private fun CurrentConditions(
     ) {
         Text(
             modifier = Modifier.alignByBaseline(),
-            text = currentTemperature.formatTemperature(unit),
+            text = unit.formatTemperature(currentTemperature),
             style = MaterialTheme.typography.h1
         )
 
@@ -359,7 +373,7 @@ private fun Forecast(
         forecast.forEach { forecast ->
             ForecastBox(
                 time = forecast.time,
-                temperature = forecast.temperature.formatTemperature(unit),
+                temperature = unit.formatTemperature(forecast.temperature),
                 icon = forecast.conditions.getIcon()
             )
         }
@@ -491,26 +505,37 @@ private fun BoxScope.SettingsButton(
     }
 }
 
-private fun Int.convertTemp(unit: MeasurementUnit): Int {
-    if (unit == MeasurementUnit.IMPERIAL) {
-        return (this * (9f/5f) + 32).toInt()
+/**
+ * Convert Celsius based temperature to Fahrenheit if the unit is [MeasurementUnit.IMPERIAL].
+ * For [MeasurementUnit.UK] and [MeasurementUnit.METRIC] - the same value is returned
+ */
+private fun MeasurementUnit.convertTemp(temperature: Int): Int {
+    if (this == MeasurementUnit.IMPERIAL) {
+        return (temperature * (9f/5f) + 32).toInt()
     }
-
-    // For metric and UK, just return the value - its in metric already
-    return this
+    return temperature
 }
 
+/**
+ * Format the distance value to a readable string based on the [MeasurementUnit].
+ * For [MeasurementUnit.UK] and [MeasurementUnit.IMPERIAL] miles is used, otherwise kilometers is
+ * used.
+ */
 private fun MeasurementUnit.formatDistance(distance: Int): String {
     val unitSuffix = when (this) {
         MeasurementUnit.METRIC -> "km away"
-        MeasurementUnit.IMPERIAL, MeasurementUnit.UK -> "miles away"
+        MeasurementUnit.IMPERIAL, MeasurementUnit.UK -> "mi away"
     }
     return "$distance $unitSuffix"
 }
 
-private fun Int.formatTemperature(unit: MeasurementUnit): String {
-    val convertedTemp = this.convertTemp(unit)
-    return if (unit == MeasurementUnit.METRIC || unit == MeasurementUnit.UK) {
+/**
+ * Format the temperature to a readable string based on the [MeasurementUnit].
+ * For [MeasurementUnit.IMPERIAL], Fahrenheit is used for the symbol, otherwise Celsius is used.
+ */
+private fun MeasurementUnit.formatTemperature(temperature: Int): String {
+    val convertedTemp = this.convertTemp(temperature)
+    return if (this == MeasurementUnit.METRIC || this == MeasurementUnit.UK) {
         "$convertedTemp°C"
     } else {
         "$convertedTemp°F"
