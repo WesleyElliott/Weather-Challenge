@@ -5,11 +5,6 @@ import androidx.annotation.DrawableRes
 import com.wesleyelliott.weather.R
 import kotlinx.parcelize.Parcelize
 
-private const val WEATHER_KEY = "weather"
-private const val TEMPERATURE_KEY = "temperature"
-private const val ENVIRONMENT_KEY = "environment"
-private const val DISTANCE_KEY = "distance"
-
 enum class WeatherOption {
     Sunny, Rainy, Snowy, Stormy, Windy, Calm
 }
