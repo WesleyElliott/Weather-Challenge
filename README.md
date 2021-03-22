@@ -29,7 +29,9 @@ Considering its a 2 screen app, this wasn't hard to handle - but doesn't scale w
 
 ## :camera_flash: Screenshots
 
-<img src="/results/screenshot_1.png" width="260">&emsp;<img src="/results/screenshot_2.png" width="260">
+<img src="/results/screenshot_1.png" width="260">&emsp;<img src="/results/screenshot_2.png" width="260">&emsp;<img src="/results/screenshot_3.png" width="260">
+
+Link to the [video](/results/video.mp4)
 
 ## :star: Credits
 - Weather report screen design: [Dribbble](https://dribbble.com/shots/6250202-Daily-UI-037-Weather)
