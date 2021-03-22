@@ -1,9 +1,37 @@
+/*
+ * Copyright 2021 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.wesleyelliott.weather.ui.weather
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -30,7 +58,12 @@ import androidx.compose.ui.window.Popup
 import com.google.accompanist.coil.CoilImage
 import com.google.accompanist.insets.statusBarsPadding
 import com.wesleyelliott.weather.R
-import com.wesleyelliott.weather.data.*
+import com.wesleyelliott.weather.data.Forecast
+import com.wesleyelliott.weather.data.WeatherChoice
+import com.wesleyelliott.weather.data.WeatherOption
+import com.wesleyelliott.weather.data.WeatherReport
+import com.wesleyelliott.weather.data.WeatherRepository
+import com.wesleyelliott.weather.data.getIcon
 import com.wesleyelliott.weather.ui.utils.isVertical
 import com.wesleyelliott.weather.utils.LocalUnitProvider
 import com.wesleyelliott.weather.utils.MeasurementUnit
@@ -491,8 +524,6 @@ private fun BoxScope.SettingsButton(
             }
         }
 
-
-
         Icon(
             modifier = Modifier
                 .clip(MaterialTheme.shapes.medium)
@@ -514,7 +545,7 @@ private fun BoxScope.SettingsButton(
  */
 private fun MeasurementUnit.convertTemp(temperature: Int): Int {
     if (this == MeasurementUnit.IMPERIAL) {
-        return (temperature * (9f/5f) + 32).toInt()
+        return (temperature * (9f / 5f) + 32).toInt()
     }
     return temperature
 }

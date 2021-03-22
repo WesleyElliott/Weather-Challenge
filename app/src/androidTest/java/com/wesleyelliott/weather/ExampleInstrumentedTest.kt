@@ -17,7 +17,6 @@ package com.wesleyelliott.weather
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.wesleyelliott.weather.MainActivity
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
