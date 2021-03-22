@@ -27,6 +27,10 @@ of items to be added. Animations were also included to provide smooth transition
 I also opted to roll my own navigation handler as I wanted some transitions between the 2 screens.
 Considering its a 2 screen app, this wasn't hard to handle - but doesn't scale well with more.
 
+The app allows for both a light and dark theme (at the moment, based only on the system theme),a 
+configurable unit system: temperature and distance are initially based off the system locale, but 
+can be changed in the app for the duration of the app session (ie, restarting the app
+will revert this setting), as well as support for both portrait and landscape. 
 ## :camera_flash: Screenshots
 
 <img src="/results/screenshot_1.png" width="260">&emsp;<img src="/results/screenshot_2.png" width="260">&emsp;<img src="/results/screenshot_3.png" width="260">
