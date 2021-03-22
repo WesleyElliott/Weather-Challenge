@@ -2,6 +2,17 @@ package com.wesleyelliott.weather.data
 
 class WeatherRepository {
 
+    /**
+     * Load the weather report for the given [weatherChoice].
+     *
+     * NB: This is all fake data, using the mocked data sets in the MockData.kt file.
+     * However, it is slightly smarter than pure random. Based on the selected [TemperatureOption]
+     * in the [weatherChoice], a valid range of temperatures is returned. Same for [DistanceOption]
+     * and the [EnvironmentOption].
+     *
+     * Note, all values in the mock data are in Metric. For phones using the Imperial system,
+     * the values will be converted at the view layer
+     */
     fun loadWeather(weatherChoice: WeatherChoice): WeatherReport {
         val location = mockLocations[weatherChoice.environmentOption]?.random() ?: Location("Unknown", "", "")
         val distance =  mockDistances[weatherChoice.distanceOption]?.random() ?: 50
