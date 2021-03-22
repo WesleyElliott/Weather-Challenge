@@ -29,7 +29,6 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,6 +43,7 @@ import com.wesleyelliott.weather.ui.common.rememberAccordionState
 import com.wesleyelliott.weather.ui.theme.MyTheme
 import com.wesleyelliott.weather.ui.weather.WeatherScreen
 import com.wesleyelliott.weather.utils.LocalUnitProvider
+import com.wesleyelliott.weather.utils.MeasurementUnit
 import com.wesleyelliott.weather.utils.getLocaleUnits
 import java.util.*
 
@@ -60,7 +60,19 @@ class MainActivity : AppCompatActivity(), BackDispatcher {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
-            val defaultUnitSystem = remember {
+            val defaultUnitSystem = rememberSaveable(
+                saver = Saver(
+                    save = {
+                        Bundle().apply {
+                            putSerializable("unit", it.value)
+                        }
+                    },
+                    restore = {
+                        val unit = it.getSerializable("unit") as? MeasurementUnit ?: Locale.getDefault().getLocaleUnits()
+                        mutableStateOf(unit)
+                    }
+                )
+            ) {
                 mutableStateOf(Locale.getDefault().getLocaleUnits())
             }
             ProvideWindowInsets {
