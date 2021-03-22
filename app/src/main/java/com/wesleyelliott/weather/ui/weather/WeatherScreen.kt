@@ -1,7 +1,6 @@
 package com.wesleyelliott.weather.ui.weather
 
 import androidx.annotation.DrawableRes
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -30,15 +29,13 @@ import androidx.compose.ui.window.Popup
 import com.google.accompanist.coil.CoilImage
 import com.google.accompanist.insets.statusBarsPadding
 import com.wesleyelliott.weather.R
-import com.wesleyelliott.weather.data.WeatherChoice
-import com.wesleyelliott.weather.data.WeatherReport
-import com.wesleyelliott.weather.data.WeatherRepository
-import com.wesleyelliott.weather.data.getIcon
+import com.wesleyelliott.weather.data.*
+import com.wesleyelliott.weather.ui.utils.isVertical
 import com.wesleyelliott.weather.utils.LocalUnitProvider
 import com.wesleyelliott.weather.utils.MeasurementUnit
 
 private const val backgroundShapeOffset = 20f
-private val backgroundShape = GenericShape { size, _ ->
+private val backgroundShapePortrait = GenericShape { size, _ ->
     moveTo(0f, backgroundShapeOffset)
     cubicTo(
         x1 = size.width * 0.2f,
@@ -59,7 +56,28 @@ private val backgroundShape = GenericShape { size, _ ->
     close()
 }
 
-@OptIn(ExperimentalAnimationApi::class)
+private val backgroundShapeLandscape = GenericShape { size, _ ->
+    moveTo(size.width * 0.7f, 0f)
+
+    cubicTo(
+        x1 = size.width * 0.7f,
+        y1 = size.height * 0.33f,
+        x2 = size.width,
+        y2 = size.height * 0.66f,
+        x3 = size.width,
+        y3 = size.height,
+    )
+    lineTo(
+        0f,
+        size.height
+    )
+    lineTo(
+        0f,
+        0f
+    )
+    close()
+}
+
 @Composable
 fun WeatherScreen(
     weatherChoice: WeatherChoice
@@ -74,6 +92,42 @@ fun WeatherScreen(
         weatherRepository.loadWeather(weatherChoice)
     }
 
+    if (isVertical) {
+        WeatherScreenPortrait(
+            weatherReport = weatherReport,
+            settingsVisible = settingsVisible.value,
+            unit = unit.value,
+            onSettingsChange = {
+                settingsVisible.value = it
+            },
+            onMeasurementChange = {
+                unit.value = it
+            }
+        )
+    } else {
+        WeatherScreenLandscape(
+            weatherReport = weatherReport,
+            settingsVisible = settingsVisible.value,
+            unit = unit.value,
+            onSettingsChange = {
+                settingsVisible.value = it
+            },
+            onMeasurementChange = {
+                unit.value = it
+            }
+        )
+    }
+}
+
+
+@Composable
+fun WeatherScreenPortrait(
+    weatherReport: WeatherReport,
+    settingsVisible: Boolean,
+    unit: MeasurementUnit,
+    onSettingsChange: (Boolean) -> Unit,
+    onMeasurementChange: (MeasurementUnit) -> Unit
+) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
@@ -90,206 +144,224 @@ fun WeatherScreen(
             )
         }
 
-        Box(
-            modifier = Modifier
-                .statusBarsPadding()
-                .padding(end = 8.dp)
-                .align(Alignment.TopEnd)
-        ) {
-
-            if (settingsVisible.value) {
-                Popup(
-                    alignment = Alignment.TopEnd,
-                    onDismissRequest = {
-                       settingsVisible.value = false
-                    },
-                    offset = IntOffset(
-                        x = 0,
-                        y = 140
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .width(160.dp)
-                            .background(
-                                MaterialTheme.colors.background,
-                                MaterialTheme.shapes.medium
-                            )
-                            .padding(4.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(MaterialTheme.shapes.medium)
-                                .clickable {
-                                    unit.value = MeasurementUnit.METRIC
-                                }
-                                .padding(vertical = 12.dp, horizontal = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Metric",
-                                style = MaterialTheme.typography.h6.copy(fontSize = 18.sp)
-                            )
-
-                            if (unit.value == MeasurementUnit.UK || unit.value == MeasurementUnit.METRIC) {
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    contentDescription = "Metric Setting"
-                                )
-                            }
-                        }
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(MaterialTheme.shapes.medium)
-                                .clickable {
-                                    unit.value = MeasurementUnit.IMPERIAL
-                                }
-                                .padding(vertical = 12.dp, horizontal = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Imperial",
-                                style = MaterialTheme.typography.h6.copy(fontSize = 18.sp),
-                            )
-                            if (unit.value == MeasurementUnit.IMPERIAL) {
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    contentDescription = "Imperial Setting"
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-
-
-            Icon(
-                modifier = Modifier
-                    .clip(MaterialTheme.shapes.medium)
-                    .background(MaterialTheme.colors.background)
-                    .clickable {
-                        settingsVisible.value = true
-                    }
-                    .padding(12.dp),
-                imageVector = Icons.Default.Settings,
-                contentDescription = "Settings",
-                tint = MaterialTheme.colors.onBackground,
-            )
-        }
+        SettingsButton(
+            settingsVisible = settingsVisible,
+            unit = unit,
+            onSettingsChange = onSettingsChange,
+            onMeasurementChange = onMeasurementChange
+        )
 
         Box(
             modifier = Modifier
                 .padding(top = maxHeight / 3)
                 .fillMaxSize()
                 .align(Alignment.TopCenter)
-                .clip(backgroundShape)
+                .clip(backgroundShapePortrait)
                 .background(MaterialTheme.colors.background)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(
-                        top = 40.dp,
-                        bottom = 30.dp,
-                        start = 20.dp,
-                        end = 20.dp
-                    ),
-                verticalArrangement = Arrangement.SpaceAround
+            WeatherReport(
+                weatherReport = weatherReport,
+                unit = unit
+            )
+        }
+    }
+}
+
+
+@Composable
+fun WeatherScreenLandscape(
+    weatherReport: WeatherReport,
+    settingsVisible: Boolean,
+    unit: MeasurementUnit,
+    onSettingsChange: (Boolean) -> Unit,
+    onMeasurementChange: (MeasurementUnit) -> Unit
+) {
+
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxSize()
+    ) {
+
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(0.60f)
+                .align(Alignment.CenterEnd)
+        ) {
+            CoilImage(
+                modifier = Modifier.fillMaxSize(),
+                data = weatherReport.location.imageUrl,
+                contentScale = ContentScale.FillBounds,
+                contentDescription = weatherReport.location.name,
+                fadeIn = true,
+            )
+        }
+
+        SettingsButton(
+            settingsVisible = settingsVisible,
+            unit = unit,
+            onSettingsChange = onSettingsChange,
+            onMeasurementChange = onMeasurementChange
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(0.6f)
+                .align(Alignment.TopStart)
+                .clip(backgroundShapeLandscape)
+                .background(MaterialTheme.colors.background)
+        ) {
+
+            WeatherReport(
+                weatherReport = weatherReport,
+                unit = unit
+            )
+        }
+    }
+}
+
+@Composable
+private fun WeatherReport(
+    weatherReport: WeatherReport,
+    unit: MeasurementUnit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .padding(
+                top = 40.dp,
+                bottom = 30.dp,
+                start = 20.dp,
+                end = 20.dp
+            ),
+        verticalArrangement = Arrangement.SpaceAround
+    ) {
+        Location(
+            locationName = weatherReport.location.name,
+            country = weatherReport.location.country,
+            distance = weatherReport.distance,
+            unit = unit
+        )
+
+        CurrentConditions(
+            currentTemperature = weatherReport.currentTemp,
+            currentConditions = weatherReport.currentConditions,
+            unit = unit
+        )
+
+        Forecast(
+            forecast = weatherReport.forecast,
+            unit = unit
+        )
+    }
+}
+
+@Composable
+private fun Location(
+    locationName: String,
+    country: String,
+    distance: Int,
+    unit: MeasurementUnit
+) {
+    Column {
+        Text(
+            modifier = Modifier.padding(end = 48.dp),
+            text = locationName,
+            style = MaterialTheme.typography.h3.copy(fontWeight = FontWeight.Light),
+        )
+        Row(
+            modifier = Modifier.padding(top = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            Text(
+                text = country,
+                style = MaterialTheme.typography.subtitle1
+            )
+            Icon(
+                imageVector = Icons.Default.PinDrop,
+                contentDescription = "Map icon"
+            )
+            Text(
+                text = unit.formatDistance(distance),
+                style = MaterialTheme.typography.subtitle1
+            )
+        }
+    }
+}
+
+@Composable
+private fun CurrentConditions(
+    currentTemperature: Int,
+    currentConditions: WeatherOption,
+    unit: MeasurementUnit,
+) {
+    Row(
+        verticalAlignment = Alignment.Bottom
+    ) {
+        Text(
+            modifier = Modifier.alignByBaseline(),
+            text = currentTemperature.formatTemperature(unit),
+            style = MaterialTheme.typography.h1
+        )
+
+        Column(
+            modifier = Modifier
+                .padding(start = 24.dp)
+                .alignBy(LastBaseline)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
-
-                Column {
-                    Text(
-                        modifier = Modifier.padding(end = 48.dp),
-                        text = weatherReport.location.name,
-                        style = MaterialTheme.typography.h3.copy(fontWeight = FontWeight.Light),
-                    )
-                    Row(
-                        modifier = Modifier.padding(top = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        Text(
-                            text = weatherReport.location.country,
-                            style = MaterialTheme.typography.subtitle1
-                        )
-                        Icon(
-                            imageVector = Icons.Default.PinDrop,
-                            contentDescription = "Map icon"
-                        )
-                        Text(
-                            text = unit.value.formatDistance(weatherReport),
-                            style = MaterialTheme.typography.subtitle1
-                        )
-                    }
-                }
-
-                Row(
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    Text(
-                        modifier = Modifier.alignByBaseline(),
-                        text = weatherReport.currentTemp.formatTemperature(unit.value),
-                        style = MaterialTheme.typography.h1
-                    )
-
-                    Column(
-                        modifier = Modifier
-                            .padding(start = 24.dp)
-                            .alignBy(LastBaseline)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                modifier = Modifier.size(24.dp),
-                                painter = painterResource(
-                                    id = weatherReport.currentConditions.getIcon()
-                                ),
-                                contentDescription = weatherReport.currentConditions.name
-                            )
-                            Text(
-                                modifier = Modifier.padding(start = 4.dp),
-                                text = weatherReport.currentConditions.name,
-                                style = MaterialTheme.typography.caption
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                modifier = Modifier.size(24.dp),
-                                painter = painterResource(id = R.drawable.ic_nature),
-                                contentDescription = "High pollen"
-                            )
-                            Text(
-                                modifier = Modifier.padding(start = 4.dp),
-                                text = "Hgh pollen",
-                                style = MaterialTheme.typography.caption
-                            )
-                        }
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 14.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    weatherReport.forecast.forEach { forecast ->
-                        ForecastBox(
-                            time = forecast.time,
-                            temperature = forecast.temperature.formatTemperature(unit.value),
-                            icon = forecast.conditions.getIcon()
-                        )
-                    }
-                }
+                Icon(
+                    modifier = Modifier.size(24.dp),
+                    painter = painterResource(
+                        id = currentConditions.getIcon()
+                    ),
+                    contentDescription = currentConditions.name
+                )
+                Text(
+                    modifier = Modifier.padding(start = 4.dp),
+                    text = currentConditions.name,
+                    style = MaterialTheme.typography.caption
+                )
             }
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    modifier = Modifier.size(24.dp),
+                    painter = painterResource(id = R.drawable.ic_nature),
+                    contentDescription = "High pollen"
+                )
+                Text(
+                    modifier = Modifier.padding(start = 4.dp),
+                    text = "Hgh pollen",
+                    style = MaterialTheme.typography.caption
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun Forecast(
+    forecast: List<Forecast>,
+    unit: MeasurementUnit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 14.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        forecast.forEach { forecast ->
+            ForecastBox(
+                time = forecast.time,
+                temperature = forecast.temperature.formatTemperature(unit),
+                icon = forecast.conditions.getIcon()
+            )
         }
     }
 }
@@ -320,6 +392,105 @@ private fun ForecastBox(
     }
 }
 
+@Composable
+private fun BoxScope.SettingsButton(
+    settingsVisible: Boolean,
+    unit: MeasurementUnit,
+    onSettingsChange: (Boolean) -> Unit,
+    onMeasurementChange: (MeasurementUnit) -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .statusBarsPadding()
+            .padding(end = 8.dp)
+            .align(Alignment.TopEnd)
+    ) {
+
+        if (settingsVisible) {
+            Popup(
+                alignment = Alignment.TopEnd,
+                onDismissRequest = {
+                    onSettingsChange(false)
+                },
+                offset = IntOffset(
+                    x = 0,
+                    y = 140
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .width(160.dp)
+                        .background(
+                            MaterialTheme.colors.background,
+                            MaterialTheme.shapes.medium
+                        )
+                        .padding(4.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(MaterialTheme.shapes.medium)
+                            .clickable {
+                                onMeasurementChange(MeasurementUnit.METRIC)
+                            }
+                            .padding(vertical = 12.dp, horizontal = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Metric",
+                            style = MaterialTheme.typography.h6.copy(fontSize = 18.sp)
+                        )
+
+                        if (unit == MeasurementUnit.UK || unit == MeasurementUnit.METRIC) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "Metric Setting"
+                            )
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(MaterialTheme.shapes.medium)
+                            .clickable {
+                                onMeasurementChange(MeasurementUnit.IMPERIAL)
+                            }
+                            .padding(vertical = 12.dp, horizontal = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Imperial",
+                            style = MaterialTheme.typography.h6.copy(fontSize = 18.sp),
+                        )
+                        if (unit == MeasurementUnit.IMPERIAL) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "Imperial Setting"
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+        Icon(
+            modifier = Modifier
+                .clip(MaterialTheme.shapes.medium)
+                .background(MaterialTheme.colors.background)
+                .clickable {
+                    onSettingsChange(true)
+                }
+                .padding(12.dp),
+            imageVector = Icons.Default.Settings,
+            contentDescription = "Settings",
+            tint = MaterialTheme.colors.onBackground,
+        )
+    }
+}
+
 private fun Int.convertTemp(unit: MeasurementUnit): Int {
     if (unit == MeasurementUnit.IMPERIAL) {
         return (this * (9f/5f) + 32).toInt()
@@ -329,12 +500,12 @@ private fun Int.convertTemp(unit: MeasurementUnit): Int {
     return this
 }
 
-private fun MeasurementUnit.formatDistance(weatherReport: WeatherReport): String {
+private fun MeasurementUnit.formatDistance(distance: Int): String {
     val unitSuffix = when (this) {
         MeasurementUnit.METRIC -> "km away"
         MeasurementUnit.IMPERIAL, MeasurementUnit.UK -> "miles away"
     }
-    return "${weatherReport.distance} $unitSuffix"
+    return "$distance $unitSuffix"
 }
 
 private fun Int.formatTemperature(unit: MeasurementUnit): String {
