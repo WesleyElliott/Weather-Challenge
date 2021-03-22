@@ -83,6 +83,11 @@ fun EnvironmentOption.getIcon(): Int {
     }
 }
 
+@DrawableRes
+fun DistanceOption.getIcon(): Int {
+    return R.drawable.ic_distance
+}
+
 fun DistanceOption.getString(): String {
     return when (this) {
         DistanceOption._100 -> "100km"
