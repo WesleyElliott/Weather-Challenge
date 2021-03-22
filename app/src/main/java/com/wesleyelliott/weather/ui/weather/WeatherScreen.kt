@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.LastBaseline
 import androidx.compose.ui.res.painterResource
@@ -59,7 +58,8 @@ fun WeatherScreen(
                 modifier = Modifier.fillMaxSize(),
                 data = "https://i.pinimg.com/originals/2e/80/4a/2e804af2fe69257bc01a54ba74d88848.jpg",
                 contentScale = ContentScale.FillBounds,
-                contentDescription = "My content description"
+                contentDescription = "My content description",
+                fadeIn = true,
             )
         }
 
@@ -69,7 +69,7 @@ fun WeatherScreen(
                 .fillMaxSize()
                 .align(Alignment.TopCenter)
                 .clip(backgroundShape)
-                .background(Color(0xFF212F3D))
+                .background(MaterialTheme.colors.background)
         ) {
             Column(
                 modifier = Modifier
