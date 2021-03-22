@@ -6,8 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -26,11 +25,14 @@ import com.wesleyelliott.weather.ui.choose.options.SelectEnvironmentChoice
 import com.wesleyelliott.weather.ui.choose.options.SelectTemperatureChoice
 import com.wesleyelliott.weather.ui.choose.options.SelectWeatherChoice
 import com.wesleyelliott.weather.ui.common.AccordionLayout
+import com.wesleyelliott.weather.ui.common.AccordionLayoutState
+import com.wesleyelliott.weather.ui.common.rememberAccordionState
 import com.wesleyelliott.weather.ui.utils.isVertical
 
 @Composable
 fun ChooseScreen(
     modifier: Modifier = Modifier,
+    accordionLayoutState: AccordionLayoutState = rememberAccordionState(),
     onGoClick: (WeatherChoice) -> Unit
 ) {
     val viewModel = viewModel<ChooseViewModel>()
@@ -50,6 +52,7 @@ fun ChooseScreen(
     ) {
         AccordionLayout(
             isVertical = isVertical,
+            accordionLayoutState = accordionLayoutState,
             collapsedSize = if (isVertical) maxHeight / 5 else maxWidth / 5
         ) {
             item { boxState ->
@@ -98,13 +101,15 @@ fun ChooseScreen(
 
             item {
                 Box(
-                    modifier = Modifier.fillMaxSize().alpha(fade.value)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .alpha(fade.value)
                 ) {
                     Button(
                         modifier = Modifier
                             .align(Alignment.Center)
-                            .size(80.dp),
-                        shape = CircleShape,
+                            .width(100.dp),
+                        shape = MaterialTheme.shapes.medium,
                         onClick = {
                             onGoClick(viewModel.state.value)
                             clicked.value = true
