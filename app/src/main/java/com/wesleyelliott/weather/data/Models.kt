@@ -49,6 +49,7 @@ data class Forecast(
 
 data class Location(
     val name: String,
+    val country: String,
     val imageUrl: String
 )
 

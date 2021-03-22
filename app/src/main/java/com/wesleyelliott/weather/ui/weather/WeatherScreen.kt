@@ -19,10 +19,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.LastBaseline
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.coil.CoilImage
 import com.wesleyelliott.weather.R
 import com.wesleyelliott.weather.data.*
+import com.wesleyelliott.weather.ui.theme.midnightBlue800
 import com.wesleyelliott.weather.utils.MeasurementUnit
 import com.wesleyelliott.weather.utils.getLocaleUnits
 import java.util.*
@@ -82,7 +84,8 @@ fun WeatherScreen(
                 }
                 .padding(24.dp),
             imageVector = Icons.Default.Settings,
-            contentDescription = "Settings"
+            contentDescription = "Settings",
+            tint = midnightBlue800,
         )
 
         Box(
@@ -100,19 +103,28 @@ fun WeatherScreen(
                         top = 40.dp,
                         bottom = 30.dp,
                         start = 40.dp,
-                        end = 40.dp
+                        end = 50.dp
                     ),
                 verticalArrangement = Arrangement.SpaceAround
             ) {
 
                 Column {
-                    Text(weatherReport.location.name, style = MaterialTheme.typography.h2)
+                    Text(
+                        modifier = Modifier.padding(end = 18.dp),
+                        text = weatherReport.location.name,
+                        style = MaterialTheme.typography.h3.copy(fontWeight = FontWeight.Light),
+                    )
                     Row(
                         modifier = Modifier.padding(top = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
                     ) {
+                        Text(
+                            text = weatherReport.location.country,
+                            style = MaterialTheme.typography.subtitle1
+                        )
                         Icon(
-                            Icons.Default.PinDrop,
+                            imageVector = Icons.Default.PinDrop,
                             contentDescription = "Map icon"
                         )
                         Text(
