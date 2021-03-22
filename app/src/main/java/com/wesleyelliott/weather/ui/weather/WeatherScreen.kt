@@ -62,13 +62,16 @@ private val backgroundShape = GenericShape { size, _ ->
 fun WeatherScreen(
     weatherChoice: WeatherChoice
 ) {
+    val weatherRepository = WeatherRepository()
     val settingsVisible = remember {
         mutableStateOf(false)
     }
     val unit = remember {
         mutableStateOf(Locale.getDefault().getLocaleUnits())
     }
-    val weatherReport = WeatherRepository().loadWeather(weatherChoice, unit.value)
+    val weatherReport = remember {
+        weatherRepository.loadWeather(weatherChoice, unit.value)
+    }
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         Box(
